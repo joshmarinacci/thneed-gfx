@@ -26,7 +26,7 @@ import basefont_data from "./base_font.json";
 // @ts-ignore
 import toolbar_json from "./toolbar.json"
 import {DebugLayer, ResizeHandle} from "./debug";
-import {randi} from "../../spritesheet_editor/common/util";
+import {randi} from "./util"
 import {TableView} from "./table";
 import {
     DialogContainer,

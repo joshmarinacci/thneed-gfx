@@ -16,7 +16,7 @@ import {
     ScrollEvent, Size,
     View
 } from "./core";
-import {Sheet, Sprite, SpriteGlyph, Tilemap} from "../../spritesheet_editor/apps/tileeditor/app-model";
+import {Sheet, Sprite, SpriteGlyph, Tilemap} from "./sprites";
 
 export function log(...args) {
     console.log('SNAKE:', ...args);

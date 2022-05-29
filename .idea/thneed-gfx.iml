@@ -5,7 +5,37 @@
       <excludeFolder url="file://$MODULE_DIR$/temp" />
       <excludeFolder url="file://$MODULE_DIR$/.tmp" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
+      <excludeFolder url="file://$MODULE_DIR$/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/node_modules/@lezer/common/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/node_modules/@lezer/lr/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/node_modules/@mischnic/json-sourcemap/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/node_modules/@parcel/source-map/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/node_modules/abortcontroller-polyfill/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/node_modules/acorn/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/node_modules/caniuse-lite/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/node_modules/chrome-trace-event/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/node_modules/cosmiconfig/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/node_modules/css-tree/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/node_modules/csso/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/node_modules/escalade/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/node_modules/json5/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/node_modules/lmdb/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/node_modules/msgpackr/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/node_modules/ordered-binary/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/node_modules/posthtml/node_modules/posthtml-parser/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/node_modules/posthtml-parser/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/node_modules/posthtml-render/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/node_modules/source-map/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/node_modules/svgo/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/node_modules/terser/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/node_modules/utility-types/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/node_modules/weak-lru-cache/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/node_modules/yaml/browser/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/node_modules/yaml/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/node_modules" />
+      <excludeFolder url="file://$MODULE_DIR$/.parcel-cache" />
     </content>
+    <content url="file://$MODULE_DIR$/node_modules" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
