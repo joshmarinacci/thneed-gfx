@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "format": "guijson",
+  "root": "toolbar_root",
+  "components": [
+    {
+      "id": "toolbar_root",
+      "type": "HBox",
+      "fill": "#aaa",
+      "name": "toolbar",
+      "valign": "center",
+      "children": ["ActionButton_001",
+        "ActionButton_002",
+        "ActionButton_003",
+        "FontIcon_001",
+        "HSpacer_001",
+        "LCDView_001",
+        "HSpacer_002",
+        "Dropdown_button_001",
+        "ActionButton_004"
+      ]
+    },
+    {
+      "id": "ActionButton_001",
+      "type": "ActionButton",
+      "caption": "⏪"
+    },
+    {
+      "id": "ActionButton_002",
+      "type": "ActionButton",
+      "caption": "▶"
+    },
+    {
+      "id": "ActionButton_003",
+      "type": "ActionButton",
+      "caption": "⏩"
+    },
+    {
+      "id": "FontIcon_001",
+      "type": "FontIcon",
+      "codepoint": "0x1D160"
+    },
+    {
+      "id": "HSpacer_001",
+      "type": "HSpacer"
+    },
+
+    {
+      "id": "LCDView_001",
+      "type": "LCDView"
+    },
+
+    {
+      "id": "HSpacer_002",
+      "type": "HSpacer"
+    },
+    {
+      "id": "Dropdown_button_001",
+      "type": "dropdown_button"
+    },
+    {
+      "id": "ActionButton_004",
+      "type": "ActionButton",
+      "caption": "add songs"
+    }
+  ]
+}
