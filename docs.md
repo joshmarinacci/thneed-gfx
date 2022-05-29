@@ -1,6 +1,6 @@
-# guilib
+# Thneed-GFX
 
-Until I come up with a better name, this is GUI lib. It is a classic style GUI toolkit (not framework), in the style
+This is a GUI lib usable for small games and apps It contains a classic style GUI toolkit (not framework), in the style
 of Swing, Cocoa, and Win32.  You have a tree of components, the components are drawn, inputs come in. It's designed
 to be very clean and easy to understand, while still pretty fast.  Currently targets HTML canvas, but any raster 
 destination should be possible (Linux framebuffer, SDL surface, memory buffer). Usable for apps and games.
@@ -9,9 +9,39 @@ destination should be possible (Linux framebuffer, SDL surface, memory buffer). 
 
 Create a canvas surface, init the inputs, add some components, then go.
 
+Put this into `simple.js`
+
 ```typescript
-    let surface = new CanvasSurface(1200,700);
+import {CanvasSurface, LayerView, ActionButton} from "thneed-gfx";
+
+let surface = new CanvasSurface(1200, 700);
+surface.addToPage()
+
+let button = new ActionButton()
+button.set_caption("this is a button")
+
+let root = new LayerView()
+root.add(button)
+surface.set_root(root)
+surface.start()
 ```
+
+Create a simple html file referencing your `simple.js`
+
+```html
+<html>
+<body>
+<script type="module">
+    import {start} from "./simple.js"
+    start()
+</script>
+</body>
+</html>
+
+```
+
+
+
 
 
 # the rules of making custom Views
