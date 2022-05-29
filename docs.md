@@ -14,16 +14,18 @@ Put this into `simple.js`
 ```typescript
 import {CanvasSurface, LayerView, ActionButton} from "thneed-gfx";
 
-let surface = new CanvasSurface(1200, 700);
-surface.addToPage()
+export function start() {
+    let surface = new CanvasSurface(1200, 700);
+    surface.addToPage()
 
-let button = new ActionButton()
-button.set_caption("this is a button")
+    let button = new ActionButton()
+    button.set_caption("this is a button")
 
-let root = new LayerView()
-root.add(button)
-surface.set_root(root)
-surface.start()
+    let root = new LayerView()
+    root.add(button)
+    surface.set_root(root)
+    surface.start()
+}
 ```
 
 Create a simple html file referencing your `simple.js`
@@ -37,7 +39,6 @@ Create a simple html file referencing your `simple.js`
 </script>
 </body>
 </html>
-
 ```
 
 
