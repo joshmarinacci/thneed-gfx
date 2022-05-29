@@ -43,7 +43,7 @@ export class Sprite {
         this.sync()
     }
     sync() {
-        console.log("syncing a sprite")
+        // console.log("syncing a sprite")
         let c = this._img.getContext('2d')
         let pal = this.palette.get_color_palette()
         c.clearRect(0,0,this._img.width, this._img.height)
@@ -168,7 +168,7 @@ export class SpriteGlyph extends Sprite {
         }
     }
     override sync() {
-        console.log("syncing SpriteGlyph")
+        // console.log("syncing SpriteGlyph")
         let c = this._img.getContext('2d')
         this.forEachPixel((v,i,j)=>{
             if(v %2 === 0) {

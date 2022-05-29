@@ -433,6 +433,7 @@ export class CanvasSurface implements SurfaceContext {
     }
 
     propagateKeyboardEvent(evt: KeyboardEvent, path:View[]) {
+        if(this._input_callback) this._input_callback(evt)
         if(!this._keyboard_focus) {
             // if(this._input_callback) this._input_callback(evt)
             return
