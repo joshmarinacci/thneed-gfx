@@ -12,7 +12,7 @@ Create a canvas surface, init the inputs, add some components, then go.
 Put this into `simple.js`
 
 ```typescript
-import {CanvasSurface, LayerView, ActionButton} from "thneed-gfx";
+import {CanvasSurface, LayerView, ActionButton} from "./node_modules/thneed-gfx/dist/index.js";
 
 export function start() {
     let surface = new CanvasSurface(1200, 700);
@@ -40,6 +40,7 @@ Create a simple html file referencing your `simple.js`
 </body>
 </html>
 ```
+
 
 
 
