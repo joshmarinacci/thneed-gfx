@@ -119,6 +119,21 @@ export class Point {
         )
     }
 
+    magnitude() {
+        return Math.sqrt(this.x*this.x + this.y*this.y)
+    }
+
+    divide(val:number) {
+        return new Point(this.x/val, this.y/val)
+    }
+
+    scale(val:number) {
+        return new Point(this.x*val, this.y*val)
+    }
+    unit() {
+        return this.divide(this.magnitude())
+    }
+
     toString(): String {
         return `Point(${this.x},${this.y})`
     }
@@ -156,6 +171,26 @@ export class Rect {
     shrink(v: number): Rect {
         return new Rect(this.x + v, this.y + v, this.w - v - v, this.h - v - v)
     }
+    position() {
+        return new Point(this.x,this.y)
+    }
+    center() {
+        return new Point(this.x+this.w/2,this.y+this.h/2)
+    }
+
+    add_position(pt:Point) {
+        this.x += pt.x
+        this.y += pt.y
+    }
+
+    intersects(rect:Rect) {
+        if(this.contains(new Point(rect.x,rect.y))) return true
+        if(this.contains(new Point(rect.x,rect.y+rect.h))) return true
+        if(this.contains(new Point(rect.x+rect.w,rect.y))) return true
+        if(this.contains(new Point(rect.x+rect.w,rect.y+rect.h))) return true
+        return false
+    }
+
 }
 
 export class Size {
