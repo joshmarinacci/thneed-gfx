@@ -1,4 +1,5 @@
 import {SurfaceContext} from "./canvas";
+import {ActionButton, BaseSelectButton} from "./components";
 
 type EventCategory = string
 type EventType = string
@@ -557,7 +558,11 @@ export function with_props(comp: View, json: any): View {
     return comp
 }
 
-export function with_action(view: View, cb: Callback): View {
+export function with_action(view: ActionButton, cb: Callback): View {
     view.on(COMMAND_ACTION, cb)
+    return view
+}
+export function with_change(view: BaseSelectButton, cb: Callback): View {
+    view.on(COMMAND_CHANGE, cb)
     return view
 }

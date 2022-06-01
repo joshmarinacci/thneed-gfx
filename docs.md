@@ -152,6 +152,20 @@ And check it on every frame in the `game_update()` function
 ```
 
 
+# debugging
+
+An app is made up of a tree of view objects. All views have bounds, even if they don't fully paint within those bounds.
+It is common to have a view which is a transparent layer but contains other views which do draw something on screen. To
+see the full tree you can use the debug tool. Add it to your app as the last layer of your app. A small 'D' button
+will appear in the lower right which can be used to activate debug mode. ex:
+
+```javascript
+    root.add(new DebugLayer())
+```
+
+You can then drag the debug view around and toggle different settings.
+
+
 # working with sprites
 
 TBD

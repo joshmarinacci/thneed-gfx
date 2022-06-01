@@ -105,7 +105,7 @@ export class ActionButton extends BaseView {
     }
 }
 
-abstract class BaseSelectButton extends BaseView {
+export abstract class BaseSelectButton extends BaseView {
     _caption: string
     _selected:boolean
     _active:boolean
