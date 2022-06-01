@@ -12,7 +12,8 @@
   "scripts": {
     "dev": "npx parcel src/guitest.html",
     "build": "npx parcel build",
-    "test-simple-dev": "npx parcel tests/simple.html"
+    "test-simple-dev": "npx parcel tests/simple.html",
+    "test-blocker-dev": "npx parcel tests/blocker.html"
   },
   "devDependencies": {
     "@parcel/packager-ts": "^2.6.0",

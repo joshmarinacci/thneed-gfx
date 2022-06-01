@@ -165,6 +165,27 @@ will appear in the lower right which can be used to activate debug mode. ex:
 
 You can then drag the debug view around and toggle different settings.
 
+# layer views
+
+A LayerView is a view which, by default, will fill the entire screen but draw nothing. Generally
+they are used to hold child views.  You can make the layer view also draw things
+underneath it's children by implementing the draw method.  The layer can conditionally block
+pointer/mouse events from the views below it. To control this override the can_receive_mouse():boolean
+method on LayerView in a subclass.
+
+ex: This will transparently block all pointer events below it, and draw an overlay
+saying 'I haz all your pointers'.
+
+```typescript
+class Blocker extends LayerView {
+    override draw(g: SurfaceContext) {
+        g.fillStandardText("I haz all your pointers!", 100,100)
+    }
+    override can_receive_mouse(): boolean {
+        return true
+    }
+}
+```
 
 # working with sprites
 
