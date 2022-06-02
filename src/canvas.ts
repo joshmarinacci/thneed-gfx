@@ -527,9 +527,6 @@ export class CanvasSurface implements SurfaceContext {
         this.fonts.set(ref_name,new CanvasFont(fnt))
     }
 
-    // draw_sprite(x: number, y: number, sprite: Sprite, scale: number) {
-    //     this.ctx.drawImage(sprite._img,x,y,sprite._img.width*scale,sprite._img.height*scale)
-    // }
     set_sprite_scale(scale:number) {
         this._sprite_scale = scale
     }
