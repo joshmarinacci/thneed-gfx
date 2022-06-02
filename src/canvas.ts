@@ -250,6 +250,9 @@ export interface SurfaceContext {
     measureText(caption: string, font_name?:string):Size;
     fillStandardText(caption: string, x: number, y: number, font_name?:string, scale?:number);
     draw_glyph(codepoint: number, x:number, y:number, font_name: string, fill: string, scale?:number);
+    set_sprite_scale(scale:number);
+    set_smooth_sprites(sprite_smoothing:boolean)
+    draw_sprite(pt:Point, sprite: Sprite);
 
     keyboard_focus():View;
     set_keyboard_focus(view:View);
@@ -261,6 +264,8 @@ export interface SurfaceContext {
 export class CanvasSurface implements SurfaceContext {
     private w: number;
     private h: number;
+    private _sprite_scale: number;
+    private _sprite_smooth: boolean;
 
     size(): Size {
         return new Size(this.w,this.h)
@@ -284,6 +289,8 @@ export class CanvasSurface implements SurfaceContext {
         this.w = w;
         this.h = h;
         this.scale = this.scale || 1
+        this._sprite_scale = 1
+        this._sprite_smooth = true
         this.canvas = document.createElement('canvas');
         this.canvas.width = w * window.devicePixelRatio * this.scale
         this.canvas.height = h * window.devicePixelRatio * this.scale
@@ -520,8 +527,22 @@ export class CanvasSurface implements SurfaceContext {
         this.fonts.set(ref_name,new CanvasFont(fnt))
     }
 
-    draw_sprite(x: number, y: number, sprite: Sprite, scale: number) {
-        this.ctx.drawImage(sprite._img,x,y,sprite._img.width*scale,sprite._img.height*scale)
+    // draw_sprite(x: number, y: number, sprite: Sprite, scale: number) {
+    //     this.ctx.drawImage(sprite._img,x,y,sprite._img.width*scale,sprite._img.height*scale)
+    // }
+    set_sprite_scale(scale:number) {
+        this._sprite_scale = scale
+    }
+    set_smooth_sprites(sprite_smoothing:boolean) {
+        this._sprite_smooth = sprite_smoothing
+    }
+    draw_sprite(pt:Point, sprite: Sprite) {
+        if(!sprite) {
+            console.warn("sprite missing")
+            return
+        }
+        this.ctx.imageSmoothingEnabled = this._sprite_smooth
+        this.ctx.drawImage(sprite._img,pt.x,pt.y,sprite._img.width*this._sprite_scale,sprite._img.height*this._sprite_scale)
     }
 
     draw_tilemap(tilemap: Tilemap, sheet:Sheet, x: number, y: number, scale: number) {
