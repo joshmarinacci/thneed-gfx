@@ -30,13 +30,14 @@ import {randi} from "./util"
 import {TableView} from "./table";
 import {
     DialogContainer,
-    DialogLayer, GrowPanel, HBox,
+    DialogLayer, HBox,
     KeystrokeCaptureView, LayerView,
     PopupContainer,
     PopupLayer,
     ScrollView,
     VBox
 } from "./containers";
+import {PanelBG} from "./style";
 
 class FixedGridPanel extends BaseView {
     private sw: number;
@@ -281,6 +282,7 @@ function restore_from_json(toolbar_json: any):View {
 
 function make_toolbar(surf:CanvasSurface) {
     let toolbar:HBox = restore_from_json(toolbar_json) as HBox
+    toolbar.set_fill(PanelBG)
     let drop:DropdownButton = toolbar.find_child('Dropdown_button_001') as DropdownButton
     drop.data = ['zero','mid','loud','bleeding ears']
     drop.set_renderer((v)=>v.toString())
@@ -418,7 +420,7 @@ class TabbedPanel extends BaseParentView {
         super("tabbed-panel");
         this.tabs = new Map<View,String>()
         this.tab_bar = new HBox()
-        this.tab_bar.set_fill('green')
+        this.tab_bar.set_fill(PanelBG)
         this.tab_bar.set_hflex(true)
         this.add(this.tab_bar)
         this.wrapper = new FillChildPanel();
@@ -580,9 +582,6 @@ export function start() {
     let surface = make_standard(1024,720)
     let tab_root = new TabbedPanel()
     tab_root.set_name('tabbed-root');
-    // let btn = with_props(new ActionButton(), {caption:'foo'});
-    // tab_root.add_view("The first tab",with_props(new ActionButton(), {caption:'foo'}));
-    // tab_root.add_view("The second tab",with_props(new ActionButton(), {caption:'bar'}));
 
     let music_root:View = make_music_player(surface) as View;
     tab_root.add_view('Music Player',music_root);

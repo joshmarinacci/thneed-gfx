@@ -292,9 +292,9 @@ export class DebugLens extends BaseParentView {
         vbox.add(with_change(new ToggleButton('right'),
             (e)=> this.sidebar_right = !this.sidebar_right))
         vbox.add(with_change(new ToggleButton('names'),
-            (e) => this.glass.set_draw_names(e.target.selected)))
+            (e) => this.glass.set_draw_names(e.target.selected())))
         vbox.add(with_change(new ToggleButton('bounds'),
-            (e) => this.glass.set_draw_bounds(e.target.selected)))
+            (e) => this.glass.set_draw_bounds(e.target.selected())))
         this.propsheet = new DebugPropSheet(this)
         vbox.add(this.propsheet)
         this.add(vbox)

@@ -10,7 +10,7 @@
     "typescript": "^4.5.5"
   },
   "scripts": {
-    "dev": "npx parcel src/guitest.html",
+    "guitest-dev": "npx parcel src/guitest.html",
     "build": "npx parcel build",
     "test-simple-dev": "npx parcel tests/simple.html",
     "test-blocker-dev": "npx parcel tests/blocker.html"

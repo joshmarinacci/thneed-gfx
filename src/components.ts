@@ -1,14 +1,8 @@
-import {SurfaceContext} from "./canvas";
+import {CanvasSurface, SurfaceContext} from "./canvas";
 import {
-    ButtonBackgroundColor,
-    ButtonBackgroundColor_active,
-    ButtonBackgroundColor_selected,
-    ButtonBorderColor,
+    ControlBG, SelectedColor, SelectedTextColor,
     StandardLeftPadding,
-    StandardSelectionColor,
-    StandardTextColor,
-    StandardTextHeight,
-    StandardTextStyle
+    StandardTextHeight, StandardTextStyle, TextColor
 } from "./style";
 import {
     Action,
@@ -80,13 +74,9 @@ export class ActionButton extends BaseView {
         this.caption = caption
     }
     draw(g: SurfaceContext): void {
-        if(this.active) {
-            g.fillBackgroundSize(this.size(), ButtonBackgroundColor_active)
-        } else {
-            g.fillBackgroundSize(this.size(), ButtonBackgroundColor)
-        }
-        g.strokeBackgroundSize(this.size(), ButtonBorderColor)
-        g.fillStandardText(this.caption, StandardLeftPadding, StandardTextHeight, 'base');
+        g.fillBackgroundSize(this.size(),this.active?SelectedColor:ControlBG)
+        g.strokeBackgroundSize(this.size(), TextColor)
+        g.fillText(this.caption, new Point(StandardLeftPadding, StandardTextHeight),this.active?SelectedTextColor:TextColor, 'bas')
     }
     input(event:CoolEvent) {
         if(event.category !== POINTER_CATEGORY) return
@@ -139,7 +129,7 @@ export abstract class BaseSelectButton extends BaseView {
             x += 16 // glyph width
             x += StandardLeftPadding // space between text and glyph
         }
-        g.fillStandardText(this._caption, x, y+StandardTextHeight-2, 'base')
+        g.fillText(this._caption, new Point(x, y+StandardTextHeight-2), this._active?SelectedTextColor:TextColor, 'base')
     }
     input(event: CoolEvent): void {
         if (event.type === POINTER_DOWN) {
@@ -173,18 +163,17 @@ export class ToggleButton extends BaseSelectButton {
         if(caption)this.set_caption(caption)
     }
     draw(ctx: SurfaceContext) {
-        let bg = ButtonBackgroundColor
+        let bg = ControlBG
         if(this.selected()) {
-            bg = ButtonBackgroundColor_selected
+            bg = SelectedColor
         }
         if(this._active) {
-            bg = ButtonBackgroundColor_active
+            bg = SelectedColor
         }
         ctx.fillBackgroundSize(this.size(), bg)
-        ctx.strokeBackgroundSize(this.size(),ButtonBorderColor)
+        ctx.strokeBackgroundSize(this.size(),TextColor)
         super.draw(ctx)
     }
-    // let ae = new CommandEvent(event.ctx, COMMAND_ACTION, this)
 }
 
 export class CheckButton extends BaseSelectButton {
@@ -211,12 +200,8 @@ export class IconButton extends BaseView {
         this._icon = 0
     }
     draw(g: SurfaceContext): void {
-        if(this.active) {
-            g.fillBackgroundSize(this.size(), ButtonBackgroundColor_active)
-        } else {
-            g.fillBackgroundSize(this.size(), ButtonBackgroundColor)
-        }
-        g.strokeBackgroundSize(this.size(), ButtonBorderColor)
+        g.fillBackgroundSize(this.size(), this.active?SelectedColor:ControlBG)
+        g.strokeBackgroundSize(this.size(), this.active?SelectedTextColor:TextColor)
         if(this._icon !== 0) {
             let x = StandardLeftPadding
             let y = StandardLeftPadding
@@ -263,7 +248,7 @@ export class SelectList extends BaseView {
         g.fillBackgroundSize(this.size(),'#ddd')
         this.data.forEach((item,i) => {
             if (i === this.selected_index) {
-                g.fill(new Rect(0,30*i,this.size().w,25), StandardSelectionColor)
+                g.fill(new Rect(0,30*i,this.size().w,25), SelectedColor)
             }
             let str = this.renderer(item)
             g.fillStandardText(str,StandardLeftPadding,i*30 + 20, 'base')
@@ -300,7 +285,7 @@ export class Header extends BaseView {
     constructor(caption?: string) {
         super(gen_id("header"))
         this._name = 'header'
-        this.fill = 'white'
+        this.fill = SelectedColor
         this._caption = caption || "no caption"
         this._hflex = true
     }
@@ -400,24 +385,20 @@ export class TextLine extends BaseView {
         this.cursor = this.text.length
     }
 
-    draw(g: SurfaceContext): void {
+    draw(g: CanvasSurface): void {
         let bg = '#ddd'
         if (g.is_keyboard_focus(this)) bg = 'white'
         g.fillBackgroundSize(this.size(), bg)
         g.strokeBackgroundSize(this.size(), 'black')
         if (g.is_keyboard_focus(this)) {
-            // @ts-ignore
-            g.ctx.fillStyle = StandardTextColor
-            // @ts-ignore
+            g.ctx.fillStyle = TextColor
             g.ctx.font = StandardTextStyle
             let parts = this._parts()
             let bx = 5
             let ax = bx + g.measureText(parts.before, 'base').w
             g.fillStandardText(parts.before, bx, 20, 'base')
             g.fillStandardText(parts.after, ax, 20, 'base')
-            // @ts-ignore
             g.ctx.fillStyle = 'black'
-            // @ts-ignore
             g.ctx.fillRect(ax, 2, 2, 20)
         } else {
             g.fillStandardText(this.text, 5, 20, 'base');

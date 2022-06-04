@@ -1,4 +1,4 @@
-import {StandardTextColor, StandardTextHeight, StandardTextStyle} from "./style";
+import {StandardTextHeight, StandardTextStyle, TextColor} from "./style";
 import {
     Callback,
     FOCUS_GAINED,
@@ -249,6 +249,7 @@ export interface SurfaceContext {
     strokeBackgroundSize(size: Size, color: string);
     measureText(caption: string, font_name?:string):Size;
     fillStandardText(caption: string, x: number, y: number, font_name?:string, scale?:number);
+    fillText(caption: string, pt:Point, color:string, font_name?:string, scale?:number);
     draw_glyph(codepoint: number, x:number, y:number, font_name: string, fill: string, scale?:number);
     set_sprite_scale(scale:number);
     set_smooth_sprites(sprite_smoothing:boolean)
@@ -504,10 +505,24 @@ export class CanvasSurface implements SurfaceContext {
                 return
             }
         }
-        this.ctx.fillStyle = StandardTextColor
+        this.ctx.fillStyle = TextColor
         this.ctx.font = StandardTextStyle
         this.ctx.fillText(caption,x, y)
     }
+    fillText(caption: string, pt:Point, color:string, font_name?:string, scale?:number) {
+        if(!scale) scale = 1
+        if(font_name && this.fonts.has(font_name)) {
+            let font = this.fonts.get(font_name)
+            if(font) {
+                font.fillText(this.ctx,caption,pt.x,pt.y-StandardTextHeight,scale)
+                return
+            }
+        }
+        this.ctx.fillStyle = color
+        this.ctx.font = StandardTextStyle
+        this.ctx.fillText(caption,pt.x,pt.y)
+    }
+
     draw_glyph(codepoint: number, x:number, y:number, font_name: string, fill: string, scale?:number) {
         if(!scale) scale = 1
         this.ctx.fillStyle = fill
