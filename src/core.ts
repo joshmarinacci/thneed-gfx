@@ -152,6 +152,9 @@ export class Rect {
         this.w = w;
         this.h = h;
     }
+    clone() {
+        return new Rect(this.x,this.y,this.w,this.h)
+    }
 
     contains(pt: Point): boolean {
         if (pt.x < this.x) return false;
@@ -172,10 +175,13 @@ export class Rect {
     shrink(v: number): Rect {
         return new Rect(this.x + v, this.y + v, this.w - v - v, this.h - v - v)
     }
-    position() {
+    position():Point {
         return new Point(this.x,this.y)
     }
-    center() {
+    size():Size {
+        return new Size(this.w,this.h)
+    }
+    center():Point {
         return new Point(this.x+this.w/2,this.y+this.h/2)
     }
 
@@ -190,6 +196,14 @@ export class Rect {
         if(this.contains(new Point(rect.x+rect.w,rect.y))) return true
         if(this.contains(new Point(rect.x+rect.w,rect.y+rect.h))) return true
         return false
+    }
+
+    contains_rect(rect:Rect):boolean {
+        if(!this.contains(new Point(rect.x,rect.y))) return false
+        if(!this.contains(new Point(rect.x,rect.y+rect.h))) return false
+        if(!this.contains(new Point(rect.x+rect.w,rect.y))) return false
+        if(!this.contains(new Point(rect.x+rect.w,rect.y+rect.h))) return false
+        return true
     }
 
 }
@@ -233,6 +247,10 @@ export class Size {
 
     equals(s: Size) {
         return this.w === s.w && this.h === s.h
+    }
+
+    clone():Size {
+        return new Size(this.w,this.h)
     }
 }
 
@@ -526,6 +544,9 @@ export abstract class BaseView implements View {
 
     visible(): boolean {
         return this._visible
+    }
+    set_visible(visible:boolean) {
+        this._visible = visible
     }
 
     abstract layout(g: SurfaceContext, available: Size): Size
