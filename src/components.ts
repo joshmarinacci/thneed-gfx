@@ -340,7 +340,6 @@ export class FontIcon extends BaseView {
     }
 }
 
-
 export class DropdownButton extends ActionButton {
     actions: Action[]
     constructor() {
