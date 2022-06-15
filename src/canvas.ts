@@ -73,10 +73,13 @@ export class MouseInputService {
     }
 
     trigger_mouse_up(position: Point, button: number) {
+        this.log("trigger_mouse_up")
         this.down = false
         let evt = new PointerEvent(this.surface, POINTER_UP, position, new Point(0,0))
         evt.button = button
         evt.target = this.path[this.path.length-1] // last
+        this.log("event is", evt)
+        this.log("path is",this.path)
         this.propagatePointerEvent(evt,this.path)
         this.surface.repaint()
     }
