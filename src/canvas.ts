@@ -45,6 +45,7 @@ export class MouseInputService {
         this.last_point = new Point(0,0)
     }
     trigger_mouse_down(position:Point, button:number) {
+        this.log("trigger_mouse_down")
         this.down = true;
         this.last_point = position
         this.path = this.scan_path(position)
@@ -52,6 +53,8 @@ export class MouseInputService {
         let evt = new PointerEvent(this.surface, POINTER_DOWN, position, new Point(0,0))
         evt.button = button
         evt.target = this.target
+        this.log("event is", evt)
+        this.log("path is",this.path)
         this.propagatePointerEvent(evt,this.path)
         this.surface.repaint()
     }
