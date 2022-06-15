@@ -98,6 +98,7 @@ export class MouseInputService {
         if(!view) return false
         if (!view.visible()) return false
         let bounds = rect_from_pos_size(view.position(),view.size())
+        console.log("bounds contains position?",bounds,position)
         if (bounds.contains(position)) {
             // @ts-ignore
             if (view.is_parent_view && view.is_parent_view()) {
