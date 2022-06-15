@@ -94,7 +94,7 @@ export class MouseInputService {
     }
 
     private calculate_path_to_cursor(view: View, position: Point, path:View[]):boolean {
-        // this.log('searching for',position,'on',view.name())
+        this.log('searching for',position,'on',view.name())
         if(!view) return false
         if (!view.visible()) return false
         let bounds = rect_from_pos_size(view.position(),view.size())
@@ -129,7 +129,7 @@ export class MouseInputService {
     private scan_path(position: Point) {
         let path:[] = []
         this.calculate_path_to_cursor(this.surface.root(),position,path)
-        // this.log("final path is",path)
+        this.log("final path is",path)
         return path
     }
 
