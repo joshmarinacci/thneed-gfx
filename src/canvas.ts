@@ -33,13 +33,13 @@ export function rect_from_pos_size(point: Point, size: Size) {
     )
 }
 
-class MouseInputService {
+export class MouseInputService {
     private surface: SurfaceContext;
     private down: boolean;
     private path: [];
     private last_point: Point;
     private target: never;
-    constructor(surface: CanvasSurface) {
+    constructor(surface: SurfaceContext) {
         this.surface = surface
         this.down = false
         this.last_point = new Point(0,0)
