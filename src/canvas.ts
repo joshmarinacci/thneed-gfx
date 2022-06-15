@@ -100,8 +100,10 @@ export class MouseInputService {
         let bounds = rect_from_pos_size(view.position(),view.size())
         console.log("bounds contains position?",bounds,position)
         if (bounds.contains(position)) {
+            console.log("it does")
             // @ts-ignore
             if (view.is_parent_view && view.is_parent_view()) {
+                console.log("is parent")
                 let parent = view as unknown as ParentView;
                 // go in reverse order to the top drawn children are picked first
                 for (let i = parent.get_children().length-1; i >= 0; i--) {
@@ -117,6 +119,7 @@ export class MouseInputService {
                     return true
                 }
             } else {
+                console.log("is not paretn, returning true")
                 return true
             }
         }
