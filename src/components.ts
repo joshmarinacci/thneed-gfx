@@ -81,9 +81,11 @@ export class ActionButton extends BaseView {
     input(event:CoolEvent) {
         if(event.category !== POINTER_CATEGORY) return
         if(event.type === POINTER_DOWN) {
+            this.log("pointer down")
             this.active = true
         }
         if(event.type === POINTER_UP) {
+            this.log("pointer up")
             this.active = false
             let ae = new CommandEvent(event.ctx, COMMAND_ACTION, this)
             this.fire(ae.type, ae)
