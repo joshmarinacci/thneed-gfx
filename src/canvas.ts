@@ -187,12 +187,12 @@ export class MouseInputService {
 
 }
 
-class KeyboardInputService {
-    private surface: CanvasSurface;
+export class KeyboardInputService {
+    private surface: SurfaceContext;
     private log(...args) {
         console.log('KeyboardService:',...args)
     }
-    constructor(surface:CanvasSurface) {
+    constructor(surface:SurfaceContext) {
         this.surface = surface
     }
 
@@ -224,6 +224,25 @@ class KeyboardInputService {
             }
         }
     }
+    propagateKeyboardEvent(evt: KeyboardEvent, path:View[]) {
+        if(!this.surface.keyboard_focus()) {
+            return
+        }
+        if(!path) {
+            this.log("no path, can't propagate")
+            return
+        }
+        let stopped = false
+        path.forEach((view:View) => {
+            if(stopped) {
+                this.log("bailing out early")
+                return
+            }
+            view.input(evt)
+            if(evt.stopped) stopped = true
+        })
+    }
+
 
     trigger_key_down(key: string, code: string, modifiers: Modifiers) {
         let evt = new KeyboardEvent(this.surface, KEYBOARD_DOWN)
@@ -231,7 +250,7 @@ class KeyboardInputService {
         evt.code = code
         evt.modifiers = modifiers
         let path = this.calculate_path_to_keyboard_focus(this.surface.root(),this.surface.keyboard_focus()) as View[]
-        this.surface.propagateKeyboardEvent(evt, path)
+        this.propagateKeyboardEvent(evt, path)
         this.surface.repaint()
     }
 
@@ -241,7 +260,7 @@ class KeyboardInputService {
         evt.code = code
         evt.modifiers = modifiers
         let path = this.calculate_path_to_keyboard_focus(this.surface.root(),this.surface.keyboard_focus()) as View[]
-        this.surface.propagateKeyboardEvent(evt, path)
+        this.propagateKeyboardEvent(evt, path)
         this.surface.repaint()
 
     }
@@ -450,28 +469,6 @@ export class CanvasSurface implements SurfaceContext {
         return pt
     }
 
-    propagateKeyboardEvent(evt: KeyboardEvent, path:View[]) {
-        if(this._input_callback) this._input_callback(evt)
-        if(!this._keyboard_focus) {
-            // if(this._input_callback) this._input_callback(evt)
-            return
-        }
-        if(!path) {
-            this.log("no path, can't propagate")
-            return
-        }
-        let stopped = false
-        path.forEach((view:View) => {
-            if(stopped) {
-                this.log("bailing out early")
-                return
-            }
-            view.input(evt)
-            if(evt.stopped) stopped = true
-        })
-        // if(this._keyboard_focus) this._keyboard_focus.input(evt)
-        // if(this._input_callback) this._input_callback(evt)
-    }
 
     keyboard_focus(): View {
         return this._keyboard_focus
