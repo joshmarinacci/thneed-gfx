@@ -386,21 +386,23 @@ export class TextLine extends BaseView {
         this.cursor = this.text.length
     }
 
-    draw(g: CanvasSurface): void {
+    draw(g: SurfaceContext): void {
         let bg = '#ddd'
         if (g.is_keyboard_focus(this)) bg = 'white'
         g.fillBackgroundSize(this.size(), bg)
         g.strokeBackgroundSize(this.size(), 'black')
         if (g.is_keyboard_focus(this)) {
-            g.ctx.fillStyle = TextColor
-            g.ctx.font = StandardTextStyle
+            // g.ctx.fillStyle = TextColor
+            // g.ctx.font = StandardTextStyle
             let parts = this._parts()
             let bx = 5
             let ax = bx + g.measureText(parts.before, 'base').w
             g.fillStandardText(parts.before, bx, 20, 'base')
             g.fillStandardText(parts.after, ax, 20, 'base')
-            g.ctx.fillStyle = 'black'
-            g.ctx.fillRect(ax, 2, 2, 20)
+            // g.ctx.fillStyle = 'black'
+            g.fill(new Rect(ax,2,2,20),'#000000')
+            // g.ctx.fillRect(ax, 2, 2, 20)
+            // console.log("cursor at",ax)
         } else {
             g.fillStandardText(this.text, 5, 20, 'base');
         }
@@ -415,6 +417,8 @@ export class TextLine extends BaseView {
         }
         if (event.type === KEYBOARD_DOWN) {
             let e = event as KeyboardEvent
+            this.log("keyboard code",e.code)
+            this.log("keyboard key",e.key)
             if (e.code === 'KeyD' && e.modifiers.ctrl) return this.delete_right()
             if (e.code === 'Backspace') return this.delete_left()
             if (e.code === 'ArrowLeft') return this.cursor_left()
