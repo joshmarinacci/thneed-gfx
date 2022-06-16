@@ -5,7 +5,6 @@
   "main": "dist/index.js",
   "module": "dist/module.js",
   "types": "dist/types.d.ts",
-  "browser": "dist/browser.js",
   "type": "module",
   "dependencies": {
     "parcel": "^2.3.2",
