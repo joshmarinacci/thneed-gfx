@@ -1,5 +1,5 @@
-import {BaseParentView, BaseView, gen_id, Point, Size, View} from "./core";
-import {CanvasSurface} from "./canvas";
+import {BaseParentView, BaseView, gen_id, Point, Rect, Size, View} from "./core";
+import {CanvasSurface, SurfaceContext} from "./canvas";
 import {ScrollView} from "./containers";
 
 class TableHeaderView extends BaseView {
@@ -11,14 +11,14 @@ class TableHeaderView extends BaseView {
         this._name = 'table-header-view'
     }
 
-    draw(g: CanvasSurface): void {
+    draw(g: SurfaceContext): void {
         g.fillBackgroundSize(this.size(), '#f0f0f0')
         // this.log("drawing",this.size())
         let x = 0
         let y = 20
         this.table.columns_keys.forEach((key, k) => {
             let tx = x + 0
-            g.fillRect(tx, 0, 1, 20, 'black')
+            g.fill(new Rect(tx,0, 1, 20),'black')
             g.fillStandardText(key, tx + 5, y, 'base')
             x += this.table.columns_widths[k]
         })
