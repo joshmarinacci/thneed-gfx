@@ -39,7 +39,7 @@ class TableGridView extends BaseView {
         this.table = table
     }
 
-    draw(g: CanvasSurface): void {
+    draw(g: SurfaceContext): void {
         let h = 20
         let gw = this.size().w
         for (let i = 0; i < this.table.data.length; i++) {
@@ -49,12 +49,12 @@ class TableGridView extends BaseView {
             this.table.columns_keys.forEach((key, k) => {
                 let col_width = this.table.columns_widths[k]
                 let tx = x
-                g.fillRect(tx, y, 1, 20, 'black')
-                g.fillRect(tx, y, gw, 1, 'black')
+                g.fill(new Rect(tx,y,1,20),'#000000')
+                g.fill(new Rect(tx, y, gw, 1), '#000000')
                 let txt = row[key]
                 let m = g.measureText(txt, 'base')
                 if (m.w > col_width) {
-                    g.fillRect(tx, y, col_width, 20, 'red')
+                    g.fill(new Rect(tx, y, col_width, 20), '#ff0000')
                 }
                 g.fillStandardText(txt, tx + 5, y + 20, 'base')
                 x += col_width
