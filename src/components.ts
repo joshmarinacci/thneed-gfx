@@ -247,7 +247,7 @@ export class SelectList extends BaseView {
         this._vflex = true
     }
     draw(g: SurfaceContext): void {
-        g.fillBackgroundSize(this.size(),'#ddd')
+        g.fillBackgroundSize(this.size(),'#dddddd')
         this.data.forEach((item,i) => {
             if (i === this.selected_index) {
                 g.fill(new Rect(0,30*i,this.size().w,25), SelectedColor)
@@ -387,7 +387,7 @@ export class TextLine extends BaseView {
     }
 
     draw(g: SurfaceContext): void {
-        let bg = '#ddd'
+        let bg = '#dddddd'
         if (g.is_keyboard_focus(this)) bg = 'white'
         g.fillBackgroundSize(this.size(), bg)
         g.strokeBackgroundSize(this.size(), 'black')
