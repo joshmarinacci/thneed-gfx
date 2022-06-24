@@ -7,4 +7,6 @@ export * from "./util"
 export * from "./style"
 export * from "./debug"
 export * from "./table"
+export {MouseInputService} from "./mouse";
+export {KeyboardInputService} from "./keyboard";
 console.log("loading thneed")
