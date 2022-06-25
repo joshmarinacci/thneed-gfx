@@ -135,6 +135,16 @@ export class Point {
         return this.divide(this.magnitude())
     }
 
+    constrain(bounds:Rect):Point {
+        let pt = this.clone()
+        if(pt.x < bounds.x) pt.x = bounds.x
+        if(pt.x > bounds.right()) pt.x = bounds.right()
+        if(pt.y < bounds.y) pt.y = bounds.y
+        if(pt.y > bounds.bottom()) pt.y = bounds.bottom()
+        return pt
+    }
+
+
     toString(): String {
         return `Point(${this.x},${this.y})`
     }
@@ -188,6 +198,10 @@ export class Rect {
     add_position(pt:Point) {
         this.x += pt.x
         this.y += pt.y
+    }
+
+    subtract(pt:Point):Rect {
+        return new Rect(this.x - pt.x, this.y - pt.y, this.w, this.h)
     }
 
     intersects(rect:Rect) {
