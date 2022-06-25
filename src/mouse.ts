@@ -18,11 +18,13 @@ export class MouseInputService {
     private path: [];
     private last_point: Point;
     private target: never;
+    public debug:boolean
 
     constructor(surface: SurfaceContext) {
         this.surface = surface
         this.down = false
         this.last_point = new Point(0, 0)
+        this.debug = false
     }
 
     trigger_mouse_down(position: Point, button: number) {
@@ -37,7 +39,7 @@ export class MouseInputService {
         this.log("event is", evt)
         this.log("path is", this.path)
         this.propagatePointerEvent(evt, this.path)
-        this.surface.repaint()
+        // this.surface.repaint()
     }
 
     trigger_mouse_move(position: Point, button: number) {
@@ -53,7 +55,7 @@ export class MouseInputService {
         evt.button = button
         evt.target = this.path[this.path.length - 1] // last
         this.propagatePointerEvent(evt, this.path)
-        this.surface.repaint()
+        // this.surface.repaint()
     }
 
     trigger_mouse_up(position: Point, button: number) {
@@ -65,7 +67,7 @@ export class MouseInputService {
         this.log("event is", evt)
         this.log("path is", this.path)
         this.propagatePointerEvent(evt, this.path)
-        this.surface.repaint()
+        // this.surface.repaint()
     }
 
     trigger_scroll(position: Point, delta: Point) {
@@ -79,12 +81,12 @@ export class MouseInputService {
         if (!view) return false
         if (!view.visible()) return false
         let bounds = rect_from_pos_size(view.position(), view.size())
-        console.log("bounds contains position?", bounds, position)
+        this.log("bounds contains position?", bounds, position)
         if (bounds.contains(position)) {
-            console.log("it does")
+            this.log("it doesssss")
             // @ts-ignore
             if (view.is_parent_view && view.is_parent_view()) {
-                console.log("is parent")
+                this.log("is parent")
                 let parent = view as unknown as ParentView;
                 // go in reverse order to the top drawn children are picked first
                 for (let i = parent.get_children().length - 1; i >= 0; i--) {
@@ -100,7 +102,7 @@ export class MouseInputService {
                     return true
                 }
             } else {
-                console.log("is not paretn, returning true")
+                this.log("is not paretn, returning true")
                 return true
             }
         }
@@ -108,7 +110,7 @@ export class MouseInputService {
     }
 
     private log(...args) {
-        console.log('MouseService:', ...args)
+        if(this.debug) console.log('MouseService:', ...args)
     }
 
     private scan_path(position: Point) {

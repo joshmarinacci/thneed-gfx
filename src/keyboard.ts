@@ -58,13 +58,15 @@ export const DOM_TO_LOGICAL = {
 
 export class KeyboardInputService {
     private surface: SurfaceContext;
+    public debug:boolean
 
     private log(...args) {
-        console.log('KeyboardService:', ...args)
+        if(this.debug) console.log('KeyboardService:', ...args)
     }
 
     constructor(surface: SurfaceContext) {
         this.surface = surface
+        this.debug = false
     }
 
     dispatch_keyboard_focus_change(old_focus: View, new_focus: View) {
@@ -97,6 +99,7 @@ export class KeyboardInputService {
     }
 
     propagateKeyboardEvent(evt: KeyboardEvent, path: View[]) {
+        this.log("propagating keyboard event",evt,path)
         if (!this.surface.keyboard_focus()) {
             return
         }
@@ -123,7 +126,7 @@ export class KeyboardInputService {
         evt.modifiers = modifiers
         let path = this.calculate_path_to_keyboard_focus(this.surface.root(), this.surface.keyboard_focus()) as View[]
         this.propagateKeyboardEvent(evt, path)
-        this.surface.repaint()
+        // this.surface.repaint()
     }
 
     trigger_key_up(key: string, code: string, modifiers: Modifiers) {
@@ -133,7 +136,7 @@ export class KeyboardInputService {
         evt.modifiers = modifiers
         let path = this.calculate_path_to_keyboard_focus(this.surface.root(), this.surface.keyboard_focus()) as View[]
         this.propagateKeyboardEvent(evt, path)
-        this.surface.repaint()
+        // this.surface.repaint()
 
     }
 }
