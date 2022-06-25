@@ -4,12 +4,57 @@ import {
     FocusEvent,
     KEYBOARD_DOWN,
     KEYBOARD_UP,
-    KeyboardEvent,
+    KeyboardEvent, KeyCode,
     Modifiers,
     ParentView,
     View
 } from "./core";
 import {SurfaceContext} from "./canvas";
+
+//generate constants from
+// KEY_A, KEY_B, KEY_C etc
+// ARROW_LEFT, ARROW_RIGHT, etc.
+// ENTER, BACKSPACE
+// produces code like logical_keys.ts, and logical_keys.rst and json file
+// hand code dom_keys.ts
+// hand code sdl_keys.rst
+// later add validation to the key generation step
+
+// use plain JS for separate generator project which makes these files
+// for now don't publish them, just copy them into the projects that need them.
+
+// generate shared function code too
+// fn sdl_to_common(kc: Keycode) -> KeyCode {
+//     match kc {
+//         Keycode::Escape => KeyCode::ESC,
+//         Keycode::Left => KeyCode::ARROW_LEFT,
+//         Keycode::Right => KeyCode::ARROW_RIGHT,
+//         Keycode::Up => KeyCode::ARROW_UP,
+//         Keycode::Down => KeyCode::ARROW_DOWN,
+//         Keycode::P => KeyCode::LETTER_P,
+//         Keycode::Q => KeyCode::LETTER_Q,
+//         Keycode::A => KeyCode::LETTER_A,
+//         _ => {
+//             KeyCode::UNKNOWN
+//         }
+//     }
+// }
+
+const KEY_D:KeyCode = 'KEY_D'
+export const LOGICAL_KEYBINDINGS = {
+    KEY_D:'KEY_D',
+    BACKSPACE:'BACKSPACE',
+    ARROW_LEFT:'ARROW_LEFT',
+    ARROW_RIGHT:'ARROW_RIGHT',
+    ENTER:'ENTER',
+}
+export const DOM_TO_LOGICAL = {
+    'KeyD':LOGICAL_KEYBINDINGS.KEY_D,
+    'Backspace':LOGICAL_KEYBINDINGS.BACKSPACE,
+    'ArrowLeft':LOGICAL_KEYBINDINGS.ARROW_LEFT,
+    'ArrowRight':LOGICAL_KEYBINDINGS.ARROW_RIGHT,
+    'Enter':LOGICAL_KEYBINDINGS.ENTER,
+}
 
 export class KeyboardInputService {
     private surface: SurfaceContext;
