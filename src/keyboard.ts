@@ -81,7 +81,8 @@ export class KeyboardInputService {
         evt.modifiers = modifiers
         let path = this.calculate_path_to_keyboard_focus(this.surface.root(), this.surface.keyboard_focus()) as View[]
         this.propagateKeyboardEvent(evt, path)
-        // this.surface.repaint()
+        // @ts-ignore
+        if(this.surface._input_callback) this.surface._input_callback(evt)
     }
 
     trigger_key_up(key: string, code: string, modifiers: Modifiers) {
@@ -91,7 +92,7 @@ export class KeyboardInputService {
         evt.modifiers = modifiers
         let path = this.calculate_path_to_keyboard_focus(this.surface.root(), this.surface.keyboard_focus()) as View[]
         this.propagateKeyboardEvent(evt, path)
-        // this.surface.repaint()
-
+        // @ts-ignore
+        if(this.surface._input_callback) this.surface._input_callback(evt)
     }
 }

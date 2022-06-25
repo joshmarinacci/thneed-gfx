@@ -59,7 +59,7 @@ export class CanvasSurface implements SurfaceContext {
     ctx: CanvasRenderingContext2D;
     debug: boolean;
     private scale: number;
-    private _input_callback: Callback;
+    protected _input_callback: Callback;
     protected _keyboard_focus: View;
     private fonts:Map<string,CanvasFont>
     private global_smoothing = true
@@ -438,6 +438,25 @@ export class CanvasSurface implements SurfaceContext {
         this._setup_mouse_input();
         this._setup_keyboard_input()
         this.repaint()
+    }
+
+    start_input() {
+        this.start()
+        this._input_callback = () => {
+            console.log("repainting on input")
+            this.repaint()
+        }
+        this.repaint()
+    }
+
+    start_game() {
+        this.start()
+        let self = this
+        function refresh() {
+            self.repaint()
+            requestAnimationFrame(refresh)
+        }
+        requestAnimationFrame(refresh)
     }
 }
 

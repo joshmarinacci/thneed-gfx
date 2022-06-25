@@ -39,7 +39,8 @@ export class MouseInputService {
         this.log("event is", evt)
         this.log("path is", this.path)
         this.propagatePointerEvent(evt, this.path)
-        // this.surface.repaint()
+        // @ts-ignore
+        if(this.surface._input_callback) this.surface._input_callback(evt)
     }
 
     trigger_mouse_move(position: Point, button: number) {
@@ -55,7 +56,8 @@ export class MouseInputService {
         evt.button = button
         evt.target = this.path[this.path.length - 1] // last
         this.propagatePointerEvent(evt, this.path)
-        // this.surface.repaint()
+        // @ts-ignore
+        if(this.surface._input_callback) this.surface._input_callback(evt)
     }
 
     trigger_mouse_up(position: Point, button: number) {
@@ -67,13 +69,16 @@ export class MouseInputService {
         this.log("event is", evt)
         this.log("path is", this.path)
         this.propagatePointerEvent(evt, this.path)
-        // this.surface.repaint()
+        // @ts-ignore
+        if(this.surface._input_callback) this.surface._input_callback(evt)
     }
 
     trigger_scroll(position: Point, delta: Point) {
         this.path = this.scan_path(position)
         let evt = new ScrollEvent(this.surface, SCROLL_EVENT, position, delta)
         this.propagateScrollEvent(evt, this.path)
+        // @ts-ignore
+        if(this.surface._input_callback) this.surface._input_callback(evt)
     }
 
     private calculate_path_to_cursor(view: View, position: Point, path: View[]): boolean {
