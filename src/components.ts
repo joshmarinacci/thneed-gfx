@@ -13,7 +13,7 @@ import {
     CommandEvent,
     CoolEvent,
     FOCUS_CATEGORY,
-    gen_id,
+    gen_id, KEYBOARD_CATEGORY,
     KEYBOARD_DOWN, KeyboardEvent,
     Point,
     POINTER_CATEGORY,
@@ -82,11 +82,9 @@ export class ActionButton extends BaseView {
     input(event:CoolEvent) {
         if(event.category !== POINTER_CATEGORY) return
         if(event.type === POINTER_DOWN) {
-            this.log("pointer down")
             this.active = true
         }
         if(event.type === POINTER_UP) {
-            this.log("pointer up")
             this.active = false
             let ae = new CommandEvent(event.ctx, COMMAND_ACTION, this)
             this.fire(ae.type, ae)
@@ -258,14 +256,22 @@ export class SelectList extends BaseView {
         })
     }
     input(event:CoolEvent) {
+        if(event.category === KEYBOARD_CATEGORY && event.type === KEYBOARD_DOWN) {
+            let kv = event as KeyboardEvent
+            if (kv.code === LOGICAL_KEYBOARD_CODE.ARROW_UP && this.selected_index > 0) {
+                this.set_selected_index(this.selected_index-1)
+            }
+            if (kv.code === LOGICAL_KEYBOARD_CODE.ARROW_DOWN && this.selected_index < this.data.length - 1) {
+                this.set_selected_index(this.selected_index+1)
+            }
+        }
         if(event.category !== POINTER_CATEGORY) return
         if(event.type === POINTER_DOWN) {
             let evt = event as PointerEvent
             let pt = evt.position
             let y = Math.floor(pt.y / 30)
-            let item = this.data[y]
-            this.selected_index = y
-            this.fire('change',{item:item,y:y})
+            this.set_selected_index(y)
+            event.ctx.set_keyboard_focus(this)
         }
     }
     set_data(data: any[]) {
@@ -278,6 +284,12 @@ export class SelectList extends BaseView {
             this.set_size(new Size(200, available.h))
         }
         return this.size()
+    }
+
+    private set_selected_index(index: number) {
+        this.selected_index = index
+        let item = this.data[this.selected_index]
+        this.fire('change', {item: item, y: this.selected_index})
     }
 }
 

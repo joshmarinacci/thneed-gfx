@@ -594,6 +594,7 @@ export function start() {
 
     (surface.find_by_name('app-layer') as LayerView).add(tab_root)
     surface.start_input()
+    // @ts-ignore
     surface.keyboard.debug = true
     // open_songs_dialog(surface)()
     surface.repaint()
