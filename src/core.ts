@@ -285,9 +285,11 @@ export class PointerEvent extends CoolEvent {
 export const KEYBOARD_CATEGORY:EventCategory = "KEYBOARD_CATEGORY"
 export const KEYBOARD_DOWN:EventType = 'KEYBOARD_DOWN'
 export const KEYBOARD_UP:EventType = 'KEYBOARD_UP'
+export type KeyCode = string;
+
 export class KeyboardEvent extends CoolEvent {
     key:string
-    code:string
+    code:KeyCode
     modifiers:Modifiers
     constructor(surface: SurfaceContext, type:EventType) {
         super(surface, KEYBOARD_CATEGORY, type);
