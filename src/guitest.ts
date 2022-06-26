@@ -593,7 +593,8 @@ export function start() {
     tab_root.add_view('Window', action_dialog);
 
     (surface.find_by_name('app-layer') as LayerView).add(tab_root)
-    surface.start()
+    surface.start_input()
+    surface.keyboard.debug = true
     // open_songs_dialog(surface)()
     surface.repaint()
 }

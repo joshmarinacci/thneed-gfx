@@ -23,6 +23,7 @@ import {
     Size
 } from "./core";
 import {HBox, PopupContainer, VBox} from "./containers";
+import {LOGICAL_KEYBOARD_CODE} from "./generated";
 
 export class Label extends BaseView {
     protected _caption: string
@@ -419,11 +420,11 @@ export class TextLine extends BaseView {
             let e = event as KeyboardEvent
             this.log("keyboard code",e.code)
             this.log("keyboard key",e.key)
-            if (e.code === 'KeyD' && e.modifiers.ctrl) return this.delete_right()
-            if (e.code === 'Backspace') return this.delete_left()
-            if (e.code === 'ArrowLeft') return this.cursor_left()
-            if (e.code === 'ArrowRight') return this.cursor_right()
-            if (e.code === 'Enter') {
+            if (e.code === LOGICAL_KEYBOARD_CODE.KEY_D && e.modifiers.ctrl) return this.delete_right()
+            if (e.code === LOGICAL_KEYBOARD_CODE.BACKSPACE) return this.delete_left()
+            if (e.code === LOGICAL_KEYBOARD_CODE.ARROW_LEFT) return this.cursor_left()
+            if (e.code === LOGICAL_KEYBOARD_CODE.ARROW_RIGHT) return this.cursor_right()
+            if (e.code === LOGICAL_KEYBOARD_CODE.ENTER) {
                 event.ctx.release_keyboard_focus(this)
                 this.fire('action', this.text)
                 return

@@ -40,21 +40,6 @@ import {SurfaceContext} from "./canvas";
 //     }
 // }
 
-const KEY_D:KeyCode = 'KEY_D'
-export const LOGICAL_KEYBINDINGS = {
-    KEY_D:'KEY_D',
-    BACKSPACE:'BACKSPACE',
-    ARROW_LEFT:'ARROW_LEFT',
-    ARROW_RIGHT:'ARROW_RIGHT',
-    ENTER:'ENTER',
-}
-export const DOM_TO_LOGICAL = {
-    'KeyD':LOGICAL_KEYBINDINGS.KEY_D,
-    'Backspace':LOGICAL_KEYBINDINGS.BACKSPACE,
-    'ArrowLeft':LOGICAL_KEYBINDINGS.ARROW_LEFT,
-    'ArrowRight':LOGICAL_KEYBINDINGS.ARROW_RIGHT,
-    'Enter':LOGICAL_KEYBINDINGS.ENTER,
-}
 
 export class KeyboardInputService {
     private surface: SurfaceContext;

@@ -3,6 +3,12 @@ import {Callback, Modifiers, ParentView, Point, Rect, Size, View} from "./core";
 import {Sheet, Sprite, SpriteGlyph, Tilemap} from "./sprites";
 import {MouseInputService} from "./mouse";
 import {KeyboardInputService} from "./keyboard";
+import {
+    DOM_KEY_CODE_TO_LOGICAL,
+    DOM_KEY_CODE_TO_LOGICAL_CODE,
+    DOM_KEYBOARD_CODE_TO_LOGICAL_CODE, DOM_KEYBOARD_KEY_TO_LOGICAL_KEY,
+    KEY_A
+} from "./generated";
 
 export function log(...args) {
     console.log('SNAKE:', ...args);
@@ -44,6 +50,21 @@ export interface SurfaceContext {
     view_to_local(pt: Point, view: View):Point;
     find_by_name(name:string):View|null;
 }
+
+function dom_keyboard_event_to_common(e: KeyboardEvent) {
+    console.log("dom keyboard event",e)
+    let k = {
+        key:'',
+        code:'',
+    }
+    if(DOM_KEYBOARD_CODE_TO_LOGICAL_CODE[e.code]) {
+        k.code = DOM_KEYBOARD_CODE_TO_LOGICAL_CODE[e.code]
+        k.key = DOM_KEYBOARD_KEY_TO_LOGICAL_KEY[e.key];
+    }
+    console.log("localcal keybaord event",k)
+    return k
+}
+
 export class CanvasSurface implements SurfaceContext {
     private w: number;
     private h: number;
@@ -418,7 +439,8 @@ export class CanvasSurface implements SurfaceContext {
                 meta: e.metaKey,
                 shift: e.shiftKey
             }
-            this.keyboard.trigger_key_down(e.key, e.code, modifiers)
+            let e2 = dom_keyboard_event_to_common(e);
+            this.keyboard.trigger_key_down(e2.key, e2.code, modifiers)
             if(!e.altKey && !e.metaKey) e.preventDefault()
         })
         document.addEventListener('keyup',(e) => {
@@ -428,7 +450,8 @@ export class CanvasSurface implements SurfaceContext {
                 meta: e.metaKey,
                 shift: e.shiftKey
             }
-            this.keyboard.trigger_key_up(e.key, e.code, modifiers)
+            let e2 = dom_keyboard_event_to_common(e);
+            this.keyboard.trigger_key_up(e2.key, e2.code, modifiers)
             if(!e.altKey && !e.metaKey) e.preventDefault()
         })
     }
@@ -443,7 +466,6 @@ export class CanvasSurface implements SurfaceContext {
     start_input() {
         this.start()
         this._input_callback = () => {
-            console.log("repainting on input")
             this.repaint()
         }
         this.repaint()
