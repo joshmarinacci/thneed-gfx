@@ -420,7 +420,8 @@ export class TextLine extends BaseView {
             let e = event as KeyboardEvent
             this.log("keyboard code",e.code)
             this.log("keyboard key",e.key)
-            if (e.code === LOGICAL_KEYBOARD_CODE.KEY_D && e.modifiers.ctrl) return this.delete_right()
+            if (e.code === LOGICAL_KEYBOARD_CODE.DELETE ||
+                (e.code === LOGICAL_KEYBOARD_CODE.KEY_D && e.modifiers.ctrl)) return this.delete_right()
             if (e.code === LOGICAL_KEYBOARD_CODE.BACKSPACE) return this.delete_left()
             if (e.code === LOGICAL_KEYBOARD_CODE.ARROW_LEFT) return this.cursor_left()
             if (e.code === LOGICAL_KEYBOARD_CODE.ARROW_RIGHT) return this.cursor_right()

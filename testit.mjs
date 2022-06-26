@@ -7,20 +7,27 @@ console.log("doing stuff here")
 const LETTERS = 'abcdefghijklmnopqrstuvwxyz'.split("")
 const DIGITS = "0123456789".split("")
 let COMMANDS = [
-    'BACKSPACE',
     'arrow_left','arrow_right','arrow_up','arrow_down',
-    'ENTER',
+    'shift_left','shift_right',
+    'control_left','control_right',
+    'alt_left','alt_right',
+    'meta_left','meta_right',
+    'backspace','delete',
+    'enter','escape','tab',
 ]
 const PUNC = {
-    'PERIOD':'.',
-    'COMMA':',',
-    'SEMICOLON':';',
-    'QUOTE':'\\\'',
+    'period':'.',
+    'comma':',',
+    'semicolon':';',
+    'quote':'\\\'',
+    'backquote':'\\\`',
     'EXCLAMATION_POINT':'!',
     'bracket_left':'[',
     'bracket_right':']',
     'slash':'/',
     'backslash':'\\\\',
+    'minus':'-',
+    'equal':'=',
 }
 
 const up = s => s.toUpperCase()
