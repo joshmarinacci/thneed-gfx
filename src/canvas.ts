@@ -4,10 +4,7 @@ import {Sheet, Sprite, SpriteGlyph, Tilemap} from "./sprites";
 import {MouseInputService} from "./mouse";
 import {KeyboardInputService} from "./keyboard";
 import {
-    DOM_KEY_CODE_TO_LOGICAL,
-    DOM_KEY_CODE_TO_LOGICAL_CODE,
     DOM_KEYBOARD_CODE_TO_LOGICAL_CODE, DOM_KEYBOARD_KEY_TO_LOGICAL_KEY,
-    KEY_A
 } from "./generated";
 
 export function log(...args) {
