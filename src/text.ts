@@ -390,10 +390,6 @@ function do_render(tree: DocLayout, g: SurfaceContext, selected_box: any, line_h
 
 }
 
-class DocCursor {
-
-}
-
 function run_tests() {
     let doc = new DocModel()
     doc.set_text('abcdefghij\nklmno\n123')
