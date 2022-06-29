@@ -380,13 +380,13 @@ function do_render(tree: DocLayout, g: SurfaceContext, selected_box: any, line_h
             let metrics = g.measureText(before,'base')
             let letter = blk[0].substring(rc.inset,rc.inset+1)
             let pt = pos.add(new Point(metrics.w,0))
-            g.fill(new Rect(pt.x, pt.y-20,1,25),'red')
+            g.fill(new Rect(pt.x, pt.y-20,1,25),'#ff0000')
             let lm = g.measureText(letter,'base')
-            g.stroke(new Rect(pt.x,pt.y-lm.h,lm.w,lm.h),'green')
+            g.stroke(new Rect(pt.x,pt.y-lm.h,lm.w,lm.h),'#00ff00')
         }
     })
 
-    g.fillText(`${ind.count} == ${rc.block}, ${rc.inset}`,new Point(5,200-10),'red')
+    g.fillText(`${ind.count} == ${rc.block}, ${rc.inset}`,new Point(5,200-10),'#000000')
 
 }
 
@@ -475,6 +475,8 @@ export class TextBox extends BaseView {
         this._doc = new DocModel()
         // this._doc.set_text("This is some very nice and cool\nand wrapped text!");
         this._doc.set_text("This is some text\nand wrapped text!");
+        this._hflex = true
+        this._vflex = true
         run_tests()
     }
     set_pref_height(h:number) {
@@ -482,13 +484,13 @@ export class TextBox extends BaseView {
     }
     draw(g: SurfaceContext): void {
         let bg = '#dddddd'
-        if (g.is_keyboard_focus(this)) bg = 'white'
+        if (g.is_keyboard_focus(this)) bg = '#ffffff'
         g.fillBackgroundSize(this.size(), bg)
-        g.strokeBackgroundSize(this.size(), 'black')
+        g.strokeBackgroundSize(this.size(), '#000000')
         do_render(this.render_tree_root, g, this.selected_box, this._line_height)
     }
     layout(g: SurfaceContext, available: Size): Size {
-        this.set_size(new Size(250,200))
+        this.set_size(available)
         this.render_tree_root = do_layout(this._doc, this.size(), g, this._line_height)
         return this.size()
     }
@@ -561,7 +563,7 @@ export class NumberTextLine extends HBox {
     override draw(g): void {
         super.draw(g)
         if (!this.is_valid()) {
-            g.strokeBackgroundSize(this.size(), 'red')
+            g.strokeBackgroundSize(this.size(), '#ff0000')
         }
     }
 
