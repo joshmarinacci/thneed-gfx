@@ -156,7 +156,6 @@ class DocModel {
         this.blocks = this._full_text.split("\n")
     }
 
-
     index_to_rc(index:IndexPosition):RCPosition {
         if(index.count < 0) return {
             block:0,
@@ -178,7 +177,6 @@ class DocModel {
             inset: this.blocks[this.blocks.length-1].length-1
         }
     }
-
     rc_to_index(rc: RCPosition):IndexPosition {
         let n = 0
         if(rc.block <0) return { count:0 }
@@ -187,21 +185,17 @@ class DocModel {
         }
         return { count: n + rc.inset }
     }
-
     char_at_index(n: IndexPosition) {
         return this._full_text[n.count]
     }
-
     char_at_rc(rc: RCPosition) {
         return this.blocks[rc.block][rc.inset]
     }
-
     add_rc(rc: RCPosition, count: number):RCPosition {
         let ind = this.rc_to_index(rc)
         ind.count += count
         return this.index_to_rc(ind)
     }
-
     subtract_rc(rc: RCPosition, count: number):RCPosition {
         let ind = this.rc_to_index(rc)
         ind.count -= count
@@ -270,6 +264,21 @@ class DocModel {
         let blk = this.blocks[rc.block]
         rc.inset = blk.length-1
         this.cursor = this.rc_to_index(rc)
+    }
+
+    split_block(rc: RCPosition) {
+        console.log("breaking at",rc)
+        let blk = this.blocks[rc.block]
+        console.log("block is",blk)
+        console.log("before is",this.blocks)
+        // console.log("cursor is",this.cursor)
+        let blk_before = blk.substring(0,rc.inset)
+        let blk_after = blk.substring(rc.inset)
+        console.log(`parts: '${blk_before}' - '${blk_after}' `)
+        this.blocks.splice(rc.block,1,blk_before,blk_after)
+        console.log("after is",this.blocks)
+        // this.cursor = this.rc_to_index(this.add_rc(this.index_to_rc(this.cursor),1))
+        // console.log("cursor is",this.cursor)
     }
 }
 class DocLayout {
@@ -439,6 +448,13 @@ function run_tests() {
         console.assert(doc.char_at_rc(rc2)==='g',`letter at index 12 is l !== ${doc.char_at_rc(rc2)}`)
     }
 
+    {
+        let rc1:RCPosition = doc.index_to_rc({count:3})
+        doc.split_block(rc1)
+        let rc2 = doc.subtract_rc(rc1,1)
+        console.log("rc2 is",rc2)
+    }
+
 
 
 
@@ -520,10 +536,14 @@ export class TextBox extends BaseView {
             if (e.code === LOGICAL_KEYBOARD_CODE.ARROW_RIGHT) return this._doc.cursor_right(1)
             if (e.code === LOGICAL_KEYBOARD_CODE.ARROW_UP) return this._doc.cursor_up(1)
             if (e.code === LOGICAL_KEYBOARD_CODE.ARROW_DOWN) return this._doc.cursor_down(1)
+            if (e.code === LOGICAL_KEYBOARD_CODE.ENTER) return this._doc.split_block(this._doc.index_to_rc(this._doc.cursor))
             if (e.key && e.key.length === 1) this._doc.insert(e.key)
         }
     }
 
+    set_text(text: string) {
+        this._doc.set_text(text);
+    }
 }
 
 export class NumberTextLine extends HBox {

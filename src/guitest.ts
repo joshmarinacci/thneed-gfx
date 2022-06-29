@@ -589,7 +589,7 @@ function make_text_root(surface: CanvasSurface) {
     view.add(textline)
 
     let textbox = new TextBox();
-    // textbox.set_text("this is some\nwrapped text.")
+    textbox.set_text("this issome\nwrapped text.")
     // textbox.set_pref_width(200)
     // textbox.set_pref_height(200)
     view.add(textbox)

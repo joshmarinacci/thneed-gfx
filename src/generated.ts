@@ -65,6 +65,7 @@ export const LOGICAL_KEYBOARD_CODE = {
    BACKSLASH:'BACKSLASH',
    MINUS:'MINUS',
    EQUAL:'EQUAL',
+   SPACE:'SPACE',
 }
 
 export const DOM_KEYBOARD_CODE_TO_LOGICAL_CODE = {
@@ -133,6 +134,7 @@ export const DOM_KEYBOARD_CODE_TO_LOGICAL_CODE = {
    'Backslash':LOGICAL_KEYBOARD_CODE.BACKSLASH,
    'Minus':LOGICAL_KEYBOARD_CODE.MINUS,
    'Equal':LOGICAL_KEYBOARD_CODE.EQUAL,
+   'Space':LOGICAL_KEYBOARD_CODE.SPACE,
 }
 
 export const DOM_KEYBOARD_KEY_TO_LOGICAL_KEY = {
@@ -184,4 +186,5 @@ export const DOM_KEYBOARD_KEY_TO_LOGICAL_KEY = {
 '\\':'\\',
 '-':'-',
 '=':'=',
+' ':' ',
 }

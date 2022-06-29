@@ -28,6 +28,7 @@ const PUNC = {
     'backslash':'\\\\',
     'minus':'-',
     'equal':'=',
+    'space':' ',
 }
 
 const up = s => s.toUpperCase()

@@ -16,6 +16,7 @@
     "build": "npx parcel build",
     "test-simple-dev": "npx parcel tests/simple.html",
     "test-blocker-dev": "npx parcel tests/blocker.html",
+    "generate-keybindings": "node testit.mjs",
     "patch": "npm run build && npm version patch && npm publish"
   },
   "devDependencies": {
