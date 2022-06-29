@@ -156,17 +156,6 @@ class DocModel {
         this.blocks = this._full_text.split("\n")
     }
 
-    cursor_right(count:number) {
-        let rc = this.index_to_rc(this.cursor)
-        rc = this.add_rc(rc,count)
-        this.cursor = this.rc_to_index(rc)
-    }
-
-    cursor_left(count:number) {
-        if(this.cursor.count > count-1) {
-            this.cursor.count -= count
-        }
-    }
 
     index_to_rc(index:IndexPosition):RCPosition {
         if(index.count < 0) return {
@@ -244,6 +233,43 @@ class DocModel {
         line = before + after
         this.blocks[rc.block] = line
         this.cursor_left(1)
+    }
+
+    cursor_left(count:number) {
+        if(this.cursor.count > count-1) {
+            this.cursor.count -= count
+        }
+    }
+    cursor_right(count:number) {
+        let rc = this.index_to_rc(this.cursor)
+        rc = this.add_rc(rc,count)
+        this.cursor = this.rc_to_index(rc)
+    }
+    cursor_up(count: number) {
+        let rc = this.index_to_rc(this.cursor)
+        rc.block -= count
+        if(rc.block >= 0) {
+            this.cursor = this.rc_to_index(rc)
+        }
+    }
+    cursor_down(count: number) {
+        let rc = this.index_to_rc(this.cursor)
+        rc.block += count
+        if(rc.block < this.blocks.length) {
+            this.cursor = this.rc_to_index(rc)
+        }
+    }
+
+    cursor_line_start() {
+        let rc = this.index_to_rc(this.cursor)
+        rc.inset = 0
+        this.cursor = this.rc_to_index(rc)
+    }
+    cursor_line_end() {
+        let rc = this.index_to_rc(this.cursor)
+        let blk = this.blocks[rc.block]
+        rc.inset = blk.length-1
+        this.cursor = this.rc_to_index(rc)
     }
 }
 class DocLayout {
@@ -481,22 +507,23 @@ export class TextBox extends BaseView {
             let e = event as KeyboardEvent
             this.log("keyboard code", e.code)
             this.log("keyboard key", e.key)
-            if (e.code === LOGICAL_KEYBOARD_CODE.DELETE ||
-                (e.code === LOGICAL_KEYBOARD_CODE.KEY_D && e.modifiers.ctrl)) return this._doc.delete_right(1)
+            if(e.modifiers.ctrl) {
+                if(e.code === LOGICAL_KEYBOARD_CODE.KEY_D) return this._doc.delete_right(1)
+                if(e.code === LOGICAL_KEYBOARD_CODE.KEY_A) return this._doc.cursor_line_start()
+                if(e.code === LOGICAL_KEYBOARD_CODE.KEY_E) return this._doc.cursor_line_end()
+                if(e.code === LOGICAL_KEYBOARD_CODE.KEY_F) return this._doc.cursor_right(1)
+                if(e.code === LOGICAL_KEYBOARD_CODE.KEY_B) return this._doc.cursor_left(1)
+                if(e.code === LOGICAL_KEYBOARD_CODE.KEY_P) return this._doc.cursor_up(1)
+                if(e.code === LOGICAL_KEYBOARD_CODE.KEY_N) return this._doc.cursor_down(1)
+            }
+            if (e.code === LOGICAL_KEYBOARD_CODE.DELETE) return this._doc.delete_right(1)
             if (e.code === LOGICAL_KEYBOARD_CODE.BACKSPACE) return this._doc.delete_left(1)
             if (e.code === LOGICAL_KEYBOARD_CODE.ARROW_LEFT) return this._doc.cursor_left(1)
             if (e.code === LOGICAL_KEYBOARD_CODE.ARROW_RIGHT) return this._doc.cursor_right(1)
-            if (e.code === LOGICAL_KEYBOARD_CODE.ARROW_UP) return this.cursor_up()
-            if (e.code === LOGICAL_KEYBOARD_CODE.ARROW_DOWN) return this.cursor_down()
+            if (e.code === LOGICAL_KEYBOARD_CODE.ARROW_UP) return this._doc.cursor_up(1)
+            if (e.code === LOGICAL_KEYBOARD_CODE.ARROW_DOWN) return this._doc.cursor_down(1)
             if (e.key && e.key.length === 1) this._doc.insert(e.key)
         }
-    }
-
-    cursor_up() {
-
-    }
-    cursor_down() {
-
     }
 
 }
