@@ -16,19 +16,45 @@ let COMMANDS = [
     'enter','escape','tab',
 ]
 const PUNC = {
-    'period':'.',
     'comma':',',
+    'less_than':'<',
+    'period':'.',
+    'greater_than':'>',
+    'slash':'/',
+    'question_mark':'?',
+
     'semicolon':';',
+    'colon':':',
     'quote':'\\\'',
+    'double_quote':'\\\"',
+
     'backquote':'\\\`',
+    'tilde':'~',
+
     'EXCLAMATION_POINT':'!',
+    'at_sign':'@',
+    'hash_sign':'#',
+    'dollar_sign':'$',
+    'percent_sign':'%',
+    'caret':'^',
+    'ampersand':'&',
+    'asterix':'*',
+    'left_paren':'(',
+    'right_paren':')',
+    'underscore':'_',
+    'plus_sign':'+',
+
+
     'bracket_left':'[',
     'bracket_right':']',
-    'slash':'/',
+    'brace_left':'{',
+    'brace_right':'}',
     'backslash':'\\\\',
+    'pipe':'|',
     'minus':'-',
     'equal':'=',
     'space':' ',
+
 }
 
 const up = s => s.toUpperCase()
@@ -76,6 +102,7 @@ ${Object.keys(PUNC).map(p =>      `   '${to_DomCase(p)}':LOGICAL_KEYBOARD_CODE.$
 
 export const DOM_KEYBOARD_KEY_TO_LOGICAL_KEY = {
 ${LETTERS.map(l => `'${l.toLowerCase()}':'${l.toLowerCase()}',`).join("\n")}
+${LETTERS.map(l => `'${l.toUpperCase()}':'${l.toUpperCase()}',`).join("\n")}
 ${DIGITS.map(d => `'${d}':'${d}',`).join("\n")}
 ${Object.entries(PUNC).map(([n,k]) => `'${k}':'${k}',`).join("\n")}
 }

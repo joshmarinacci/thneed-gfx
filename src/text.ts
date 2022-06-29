@@ -222,13 +222,11 @@ class DocModel {
     delete_left(count: number) {
         let rc = this.index_to_rc(this.cursor)
         let new_inset = rc.inset-1
-        console.log("new inset",rc.inset,new_inset)
         if(new_inset < 0) {
-            console.log("must merge with previous line")
             if(rc.block > 0) {
                 let line = this.blocks[rc.block-1] + this.blocks[rc.block]
-                console.log("new line is",line)
                 this.blocks.splice(rc.block-1,2,line)
+                return
             }
         } else {
             let line = this.blocks[rc.block]
