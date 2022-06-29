@@ -450,9 +450,9 @@ function run_tests() {
 
     {
         let rc1:RCPosition = doc.index_to_rc({count:3})
+        console.assert(doc.char_at_rc({block:0, inset:3}) === 'd')
         doc.split_block(rc1)
-        let rc2 = doc.subtract_rc(rc1,1)
-        console.log("rc2 is",rc2)
+        console.assert(doc.char_at_rc({block:1, inset:0}) === 'd')
     }
 
 
