@@ -221,11 +221,22 @@ class DocModel {
     }
     delete_left(count: number) {
         let rc = this.index_to_rc(this.cursor)
-        let line = this.blocks[rc.block]
-        let before = line.substring(0,rc.inset-1)
-        let after = line.substring(rc.inset)
-        line = before + after
-        this.blocks[rc.block] = line
+        let new_inset = rc.inset-1
+        console.log("new inset",rc.inset,new_inset)
+        if(new_inset < 0) {
+            console.log("must merge with previous line")
+            if(rc.block > 0) {
+                let line = this.blocks[rc.block-1] + this.blocks[rc.block]
+                console.log("new line is",line)
+                this.blocks.splice(rc.block-1,2,line)
+            }
+        } else {
+            let line = this.blocks[rc.block]
+            let before = line.substring(0, rc.inset - 1)
+            let after = line.substring(rc.inset)
+            line = before + after
+            this.blocks[rc.block] = line
+        }
         this.cursor_left(1)
     }
 
@@ -267,18 +278,26 @@ class DocModel {
     }
 
     split_block(rc: RCPosition) {
-        console.log("breaking at",rc)
+        // console.log("breaking at",rc)
         let blk = this.blocks[rc.block]
-        console.log("block is",blk)
-        console.log("before is",this.blocks)
+        // console.log("block is",blk)
+        // console.log("before is",this.blocks)
         // console.log("cursor is",this.cursor)
         let blk_before = blk.substring(0,rc.inset)
         let blk_after = blk.substring(rc.inset)
-        console.log(`parts: '${blk_before}' - '${blk_after}' `)
+        // console.log(`parts: '${blk_before}' - '${blk_after}' `)
         this.blocks.splice(rc.block,1,blk_before,blk_after)
-        console.log("after is",this.blocks)
+        // console.log("after is",this.blocks)
         // this.cursor = this.rc_to_index(this.add_rc(this.index_to_rc(this.cursor),1))
         // console.log("cursor is",this.cursor)
+    }
+
+    set_cursor_rc(rc1: RCPosition) {
+        this.cursor = this.rc_to_index(rc1)
+    }
+
+    get_cursor_index() {
+        return this.cursor
     }
 }
 class DocLayout {
@@ -455,6 +474,25 @@ function run_tests() {
         console.assert(doc.char_at_rc({block:1, inset:0}) === 'd')
     }
 
+    {
+        //backwards delete
+        let rc1:RCPosition = doc.index_to_rc({count:2})
+        doc.set_cursor_rc(rc1)
+        console.assert(doc.get_cursor_index().count === 2)
+        console.assert(doc.blocks[0] === 'abc')
+        doc.delete_left(1)
+        console.assert(doc.blocks[0] === 'ac')
+
+        console.log('====')
+        console.log(doc.blocks)
+        doc.set_cursor_rc({block:2,inset:0})
+        console.assert(doc.blocks[1] === 'defghij')
+        console.assert(doc.get_cursor_index().count === 9)
+        doc.delete_left(1)
+        console.assert(doc.blocks[1] === 'defghijklmno')
+        console.log(doc.blocks)
+
+    }
 
 
 
