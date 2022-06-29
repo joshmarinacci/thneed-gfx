@@ -10,4 +10,6 @@ export * from "./table"
 export * from "./generated"
 export {MouseInputService} from "./mouse";
 export {KeyboardInputService} from "./keyboard";
+export {NumberTextLine} from "./text";
+export {TextLine} from "./text";
 console.log("loading thneed")

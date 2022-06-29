@@ -1,9 +1,5 @@
-import {CanvasSurface, SurfaceContext} from "./canvas";
-import {
-    ControlBG, SelectedColor, SelectedTextColor,
-    StandardLeftPadding,
-    StandardTextHeight, StandardTextStyle, TextColor
-} from "./style";
+import {SurfaceContext} from "./canvas";
+import {ControlBG, SelectedColor, SelectedTextColor, StandardLeftPadding, StandardTextHeight, TextColor} from "./style";
 import {
     Action,
     BaseView,
@@ -12,17 +8,19 @@ import {
     COMMAND_CHANGE,
     CommandEvent,
     CoolEvent,
-    FOCUS_CATEGORY,
-    gen_id, KEYBOARD_CATEGORY,
-    KEYBOARD_DOWN, KeyboardEvent,
+    gen_id,
+    KEYBOARD_CATEGORY,
+    KEYBOARD_DOWN,
+    KeyboardEvent,
     Point,
     POINTER_CATEGORY,
     POINTER_DOWN,
     POINTER_UP,
-    PointerEvent, Rect,
+    PointerEvent,
+    Rect,
     Size
 } from "./core";
-import {HBox, PopupContainer, VBox} from "./containers";
+import {PopupContainer, VBox} from "./containers";
 import {LOGICAL_KEYBOARD_CODE} from "./generated";
 
 export class Label extends BaseView {
@@ -383,175 +381,5 @@ export class DropdownButton extends ActionButton {
     }
     set_actions(actions: Action[]) {
         this.actions = actions
-    }
-}
-
-export class TextLine extends BaseView {
-    text: string;
-    private cursor: number;
-    private pref_width: number;
-
-    constructor() {
-        super(gen_id("text-line"));
-        this._name = '@text-line'
-        this.text = "abc"
-        this.pref_width = 100
-        this.cursor = this.text.length
-    }
-
-    draw(g: SurfaceContext): void {
-        let bg = '#dddddd'
-        if (g.is_keyboard_focus(this)) bg = 'white'
-        g.fillBackgroundSize(this.size(), bg)
-        g.strokeBackgroundSize(this.size(), 'black')
-        if (g.is_keyboard_focus(this)) {
-            // g.ctx.fillStyle = TextColor
-            // g.ctx.font = StandardTextStyle
-            let parts = this._parts()
-            let bx = 5
-            let ax = bx + g.measureText(parts.before, 'base').w
-            g.fillStandardText(parts.before, bx, 20, 'base')
-            g.fillStandardText(parts.after, ax, 20, 'base')
-            // g.ctx.fillStyle = 'black'
-            g.fill(new Rect(ax,2,2,20),'#000000')
-            // g.ctx.fillRect(ax, 2, 2, 20)
-            // console.log("cursor at",ax)
-        } else {
-            g.fillStandardText(this.text, 5, 20, 'base');
-        }
-    }
-
-    input(event: CoolEvent) {
-        if (event.category === FOCUS_CATEGORY) {
-            // this.log("got keyboard focus change",event.category)
-        }
-        if (event.type === POINTER_DOWN) {
-            event.ctx.set_keyboard_focus(this)
-        }
-        if (event.type === KEYBOARD_DOWN) {
-            let e = event as KeyboardEvent
-            this.log("keyboard code",e.code)
-            this.log("keyboard key",e.key)
-            if (e.code === LOGICAL_KEYBOARD_CODE.DELETE ||
-                (e.code === LOGICAL_KEYBOARD_CODE.KEY_D && e.modifiers.ctrl)) return this.delete_right()
-            if (e.code === LOGICAL_KEYBOARD_CODE.BACKSPACE) return this.delete_left()
-            if (e.code === LOGICAL_KEYBOARD_CODE.ARROW_LEFT) return this.cursor_left()
-            if (e.code === LOGICAL_KEYBOARD_CODE.ARROW_RIGHT) return this.cursor_right()
-            if (e.code === LOGICAL_KEYBOARD_CODE.ENTER) {
-                event.ctx.release_keyboard_focus(this)
-                this.fire('action', this.text)
-                return
-            }
-            if (e.key && e.key.length === 1) this.insert(e.key)
-        }
-    }
-
-    layout(g: SurfaceContext, available: Size): Size {
-        this.set_size(new Size(this.pref_width, 26))
-        if (this._hflex) {
-            this.size().w = available.w
-        }
-        return this.size()
-    }
-
-    private insert(key: string) {
-        let parts = this._parts()
-        this.text = `${parts.before}${key}${parts.after}`
-        this.cursor_right()
-        this.fire('change',this.text)
-    }
-
-    private delete_left() {
-        let parts = this._parts()
-        this.text = `${parts.before.slice(0, parts.before.length - 1)}${parts.after}`
-        this.cursor_left()
-        this.fire('change',this.text)
-    }
-
-    private delete_right() {
-        let parts = this._parts()
-        this.text = `${parts.before}${parts.after.slice(1)}`
-        this.fire('change',this.text)
-    }
-
-    private cursor_left() {
-        this.cursor -= 1
-        if (this.cursor < 0) this.cursor = 0
-    }
-
-    private cursor_right() {
-        this.cursor += 1
-        if (this.cursor > this.text.length) this.cursor = this.text.length
-    }
-
-    private _parts() {
-        return {
-            before: this.text.slice(0, this.cursor),
-            after: this.text.slice(this.cursor),
-        }
-    }
-
-    set_text(name: string) {
-        this.text = name
-        this.cursor = this.text.length
-        this.fire('change',this.text)
-    }
-
-    set_pref_width(w: number) {
-        this.pref_width = w
-    }
-}
-
-export class NumberTextLine extends HBox {
-    private _value:number
-    private text_line: TextLine;
-    private up_button: IconButton;
-    private down_button: IconButton;
-    constructor() {
-        super()
-        this.pad = 1
-        this._value = 0
-        this.text_line = new TextLine()
-        this.add(this.text_line)
-        this.text_line.on('change',() => {
-            let v = parseInt(this.text_line.text,10);
-            if(Number.isInteger(v)) {
-                this._value = v
-            } else {
-                this.log("invalid!")
-            }
-        })
-        this.up_button = new IconButton()
-        this.up_button.set_icon(8593)
-        this.up_button.on('action',() => {
-            this.set_value(this.value()+1)
-        })
-        this.down_button = new IconButton()
-        this.down_button.set_icon(8595)
-        this.down_button.on('action',() => {
-            this.set_value(this.value()-1)
-        })
-        this.add(this.up_button)
-        this.add(this.down_button)
-    }
-    override draw(g):void {
-        super.draw(g)
-        if(!this.is_valid()) {
-            g.strokeBackgroundSize(this.size(),'red')
-        }
-    }
-
-    public set_value(value:number) {
-        this._value = value
-        this.text_line.set_text(''+value)
-    }
-
-    private is_valid() {
-        let v = parseInt(this.text_line.text)
-        return Number.isInteger(v)
-    }
-
-    value():number {
-        return this._value
     }
 }

@@ -5,9 +5,8 @@ import {
     Header,
     HSpacer,
     Label,
-    NumberTextLine,
     RadioButton,
-    SelectList, TextLine, ToggleButton
+    SelectList, ToggleButton
 } from "./components";
 import {
     BaseParentView,
@@ -38,6 +37,7 @@ import {
     VBox
 } from "./containers";
 import {PanelBG} from "./style";
+import {NumberTextLine, TextBox, TextLine} from "./text";
 
 class FixedGridPanel extends BaseView {
     private sw: number;
@@ -446,7 +446,7 @@ class TabbedPanel extends BaseParentView {
         tab_button.set_caption(title)
         tab_button.set_selected(false)
         tab_button.on(COMMAND_CHANGE,()=>{
-            this.log("switching tabs to",title,content)
+            // this.log("switching tabs to",title,content)
             this.selected = content
             this.tab_bar.get_children().forEach(ch => {
                 (ch as ToggleButton).set_selected(false)
@@ -578,8 +578,27 @@ function make_action_window(surface: CanvasSurface):View {
     return window
 }
 
+function make_text_root(surface: CanvasSurface) {
+    let view = new VBox()
+    view.set_hflex(false)
+    view.set_vflex(true)
+
+    let textline = new TextLine();
+    textline.set_text('a text line')
+    textline.set_pref_width(200)
+    view.add(textline)
+
+    let textbox = new TextBox();
+    // textbox.set_text("this is some\nwrapped text.")
+    // textbox.set_pref_width(200)
+    // textbox.set_pref_height(200)
+    view.add(textbox)
+
+    return view;
+}
+
 export function start() {
-    let surface = make_standard(1024,720)
+    let surface = make_standard(800,400)
     let tab_root = new TabbedPanel()
     tab_root.set_name('tabbed-root');
 
@@ -592,10 +611,14 @@ export function start() {
     let action_dialog = make_action_window(surface);
     tab_root.add_view('Window', action_dialog);
 
-    (surface.find_by_name('app-layer') as LayerView).add(tab_root)
+    let text_root:View = make_text_root(surface)
+    // tab_root.add_view('text',text_root);
+    surface.set_root(text_root)
+
+    // (surface.find_by_name('app-layer') as LayerView).add(tab_root)
     surface.start_input()
     // @ts-ignore
-    surface.keyboard.debug = true
+    surface.keyboard.debug = false
     // open_songs_dialog(surface)()
     surface.repaint()
 }

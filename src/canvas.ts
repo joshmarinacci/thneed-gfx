@@ -49,7 +49,7 @@ export interface SurfaceContext {
 }
 
 function dom_keyboard_event_to_common(e: KeyboardEvent) {
-    console.log("dom keyboard event",e)
+    // console.log("dom keyboard event",e)
     let k = {
         key:'',
         code:'',
@@ -58,7 +58,7 @@ function dom_keyboard_event_to_common(e: KeyboardEvent) {
         k.code = DOM_KEYBOARD_CODE_TO_LOGICAL_CODE[e.code]
         k.key = DOM_KEYBOARD_KEY_TO_LOGICAL_KEY[e.key];
     }
-    console.log("localcal keybaord event",k)
+    // console.log("localcal keybaord event",k)
     return k
 }
 
@@ -338,7 +338,7 @@ export class CanvasSurface implements SurfaceContext {
     draw_tilemap(tilemap: Tilemap, sheet:Sheet, x: number, y: number, scale: number) {
         tilemap.forEachPixel((val,i,j) => {
             if (!val || val === 0) return;
-            // let sheet = this.doc.get_selected_sheet()
+            // let sheet = this.model.get_selected_sheet()
             let tile = sheet.sprites.find((t:Sprite) => t.id ===val);
             this.ctx.imageSmoothingEnabled = false
             if(tile) {
