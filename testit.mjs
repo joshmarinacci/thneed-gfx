@@ -21,28 +21,28 @@ const PUNC = {
     'period':'.',
     'greater_than':'>',
     'slash':'/',
-    'question_mark':'?',
+    'question':'?',
 
     'semicolon':';',
     'colon':':',
     'quote':'\\\'',
     'double_quote':'\\\"',
 
-    'backquote':'\\\`',
-    'tilde':'~',
+    'backquote':'\`',
+    // 'tilde':'~',
 
-    'EXCLAMATION_POINT':'!',
-    'at_sign':'@',
-    'hash_sign':'#',
-    'dollar_sign':'$',
-    'percent_sign':'%',
+    'exclaim':'!',
+    'at':'@',
+    'hash':'#',
+    'dollar':'$',
+    'percent':'%',
     'caret':'^',
     'ampersand':'&',
-    'asterix':'*',
+    'asterisk':'*',
     'left_paren':'(',
     'right_paren':')',
     'underscore':'_',
-    'plus_sign':'+',
+    'plus':'+',
 
 
     'bracket_left':'[',
@@ -52,7 +52,7 @@ const PUNC = {
     'backslash':'\\\\',
     'pipe':'|',
     'minus':'-',
-    'equal':'=',
+    'equals':'=',
     'space':' ',
 
 }
@@ -74,12 +74,53 @@ const LOG_TO_SDL = {
     'alt_left':'LAlt', 'alt_right':'RAlt',
     'meta_left':'LGui', 'meta_right':'RGui',
     'enter':'Return',
+    'less_than':'Less',
+    'greater_than':'Greater',
+    'double_quote':'Quotedbl',
+    'bracket_left':'LeftBracket','bracket_right':'RightBracket',
+    'paren_left':'LeftParen','paren_right':'RightParen',
+    'pipe':'KpVerticalBar',
+    'brace_left':'KpLeftBrace','brace_right':'KpRightBrace',
+    '1':'!',
+    '2':'@',
+    '3':'#',
+    '4':'$',
+    '5':'%',
+    '6':'^',
+    '7':'&',
+    '8':'*',
+    '9':'(',
+    '0':')',
+    'plus':'Plus',
 }
 
+const QWERTY_SHIFT = {
+    'equals':'+',
+    'minus':'_',
+    'comma':'<',
+    'period':'>',
+    'slash':'?',
+    'bracket_left':'{',
+    'bracket_right':'}',
+    'backslash':'|',
+    'semicolon':':',
+    'quote':'\\\"',
+    'backquote':'~',
+}
 function to_SDL(p) {
-    console.log("generating to SDL",p)
+    // console.log("generating to SDL",p)
     if(LOG_TO_SDL[p]) return LOG_TO_SDL[p]
     return to_DomCase(p)
+}
+
+function to_SDL_shift(p) {
+    if(LOG_TO_SDL[p]) return LOG_TO_SDL[p]
+    return to_DomCase(p)
+}
+function to_SDL_shift_key(p) {
+    console.log("generating to SDL with shift key",p,QWERTY_SHIFT[p],PUNC[p])
+    if(QWERTY_SHIFT[p]) return QWERTY_SHIFT[p]
+    if(PUNC[p]) return PUNC[p]
 }
 
 const logical = `
@@ -137,11 +178,11 @@ use serde::{Deserialize, Serialize};
 pub enum KeyCode {
     RESERVED,
     UNKNOWN,
-    SPACE,
 
 ${LETTERS.map(l  => `    LETTER_${up(l)},`).join("\n")}   
 ${DIGITS.map(l   => `    DIGIT_${up(l)},`).join("\n")}   
 ${COMMANDS.map(l => `    ${up(l)},`).join("\n")}   
+${Object.entries(PUNC).map(([n,k]) => `        ${up(n)},`).join("\n")}
 
     MOUSE_PRIMARY,
 }
@@ -150,16 +191,17 @@ await fs.outputFile('../clogwench/common/src/generated.rs',idealos_rust_out)
 
 
 const sdl_to_idealos_rust_out = `
-use sdl2::keyboard::Keycode;
+use sdl2::keyboard::{Keycode, Mod};
 use common::generated::KeyCode;
 
 //hi. cool!
-pub fn sdl_to_common(kc: Keycode) -> KeyCode {
+pub fn sdl_to_common(kc: Keycode, keymod: Mod) -> KeyCode {
     println!("converting SDL {}",kc);
     let code = match kc {
 ${LETTERS.map(l =>  `        Keycode::${up(l)} => KeyCode::LETTER_${up(l)},`).join("\n")}   
 ${DIGITS.map(l =>   `        Keycode::Num${up(l)} => KeyCode::DIGIT_${up(l)},`).join("\n")}   
 ${COMMANDS.map(l => `        Keycode::${to_SDL(l)} => KeyCode::${up(l)},`).join("\n")}   
+${Object.entries(PUNC).map(([n,k]) => `        Keycode::${to_SDL(n)} => KeyCode::${up(n)},`).join("\n")}
         _ => {
             KeyCode::UNKNOWN
         }
@@ -167,5 +209,23 @@ ${COMMANDS.map(l => `        Keycode::${to_SDL(l)} => KeyCode::${up(l)},`).join(
     println!("to code {:?}",code);
     return code
 }
+pub fn sdl_to_common_letter(kc: Keycode, keymod: Mod) -> String {
+    if keymod.contains(Mod::LSHIFTMOD) || keymod.contains(Mod::RSHIFTMOD) {
+        match kc {
+${LETTERS.map(l =>  `        Keycode::${up(l)} => "${up(l)}".to_string(),`).join("\n")}   
+${DIGITS.map(l =>   `        Keycode::Num${up(l)} => "${to_SDL_shift(l)}".to_string(),`).join("\n")}   
+${Object.entries(PUNC).map(([n,k]) => `        Keycode::${to_SDL(n)} => "${to_SDL_shift_key(n)}".to_string(),`).join("\n")}
+        _ => "".to_string()
+        }
+    } else {
+        match kc {
+${LETTERS.map(l =>  `        Keycode::${up(l)} => "${l}".to_string(),`).join("\n")}
+${DIGITS.map(l =>   `        Keycode::Num${up(l)} => "${l}".to_string(),`).join("\n")}   
+${Object.entries(PUNC).map(([n,k]) => `        Keycode::${to_SDL(n)} => "${k}".to_string(),`).join("\n")}
+            _ => "".to_string()
+        }   
+    }
+}
 `
+
 await fs.outputFile('../clogwench/plat/native-macos/src/sdl_to_common.rs',sdl_to_idealos_rust_out)
