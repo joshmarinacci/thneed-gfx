@@ -1,5 +1,6 @@
 import {CanvasSurface} from "./canvas";
-import {BaseParentView, BaseView, ParentView, View} from "./core";
+import {BaseParentView, BaseView, ParentView, Point, Size, View} from "./core";
+import {ActionButton, BaseSelectButton, ToggleButton} from "./components";
 
 class EventSource<Type, Payload> {
     private listeners: Map<Type, Set<(p: Payload) => void>>;
@@ -154,30 +155,44 @@ class ViewMop implements Mop {
     getObjectProperties(obj_id:string):MopPropDef[] {
         let obj = this._lookup_object(obj_id)
         // @ts-ignore
-        console.log("obj is",isParent(obj))
-        if(isParent(obj)) return PARENT_VIEW_PROPS.map(name => {
-            let parent = obj as BaseParentView
-            if(name === "children") return {
-                name:"children",
-                type:"Array",
-                primitive:false,
-                value:this.get_object_id(parent.get_children())
-            }
-            return this._calculate_prop_def(name,obj[name]())
-        })
-        if(obj instanceof BaseView) return VIEW_PROPS.map(name => {
-            return this._calculate_prop_def(name,obj[name]())
-        })
-        return this._calculate_object_props(obj)
+        let props:MopPropDef[] = []
+        if(obj instanceof BaseParentView) {
+            props = PARENT_VIEW_PROPS.map(name => {
+                let parent = obj as BaseParentView
+                if(name === "children") return {
+                    name:"children",
+                    type:"Array",
+                    primitive:false,
+                    value:this.get_object_id(parent.get_children())
+                }
+                return this._calculate_prop_def(name,obj[name]())
+            })
+        }
+        if(obj instanceof BaseView) {
+            props = VIEW_PROPS.map(name => {
+                return this._calculate_prop_def(name,obj[name]())
+            })
+        }
+        if (obj instanceof Size) return this._calculate_object_props(obj)
+        if (obj instanceof Point) return this._calculate_object_props(obj)
+        if (obj instanceof Array) return this._calculate_object_props(obj)
+        if (obj instanceof ActionButton) {
+            let but = obj as ActionButton
+            props.push(this._calculate_prop_def('caption',but.caption()))
+        }
+        if (obj instanceof BaseSelectButton) {
+            let but = obj as BaseSelectButton
+            props.push(this._calculate_prop_def('selected',but.selected()))
+            props.push(this._calculate_prop_def('caption',but.caption()))
+        }
+        return props
     }
     private get_object_id(pv: object) {
         if (!this.backward_cache.has(pv)) {
             let id = genid("object_cache")
             this.backward_cache.set(pv, id)
             this.forward_cache.set(id, pv)
-            console.log("put into cache",id,pv)
         }
-        console.log("object is is now", this.backward_cache.get(pv))
         return this.backward_cache.get(pv)
     }
     private _calculate_prop_def(name:string, value:any):MopPropDef {
@@ -197,16 +212,6 @@ class ViewMop implements Mop {
             value: value
         }
     }
-    private _calculate_view_props(obj: View):MopPropDef[] {
-        if(obj instanceof BaseView || obj instanceof BaseParentView) {
-            return VIEW_PROPS.map(name => {
-                let value:any = obj[name]()
-                return this._calculate_prop_def(name,value)
-            })
-        }
-
-    }
-
     private _calculate_object_props(obj: object):MopPropDef[] {
         return Object.getOwnPropertyNames(obj).map(name => this._calculate_prop_def(name,obj[name]))
     }

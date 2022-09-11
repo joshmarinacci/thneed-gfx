@@ -98,9 +98,9 @@ class DropdownButton extends ActionButton {
         this.data = data
         this.selected_index = selected
         this.renderer = param2
-        this.caption = 'invalid'
+        this._caption = 'invalid'
         if(this.selected_index >= 0 && this.selected_index < this.data.length) {
-            this.caption = this.renderer(this.data[this.selected_index])
+            this._caption = this.renderer(this.data[this.selected_index])
         }
         this.on('action',(evt:CommandEvent)=>{
             let popup = new PopupContainer();
@@ -112,7 +112,7 @@ class DropdownButton extends ActionButton {
                         popup_layer.remove(popup)
                         this.selected_index = i
                         if(this.selected_index >= 0 && this.selected_index < this.data.length) {
-                            this.caption = this.renderer(this.data[this.selected_index])
+                            this._caption = this.renderer(this.data[this.selected_index])
                         }
                     })
                     popup_box.add(btn)
@@ -128,7 +128,7 @@ class DropdownButton extends ActionButton {
     set_selected_index(number: number) {
         this.selected_index = number
         if(this.selected_index >= 0 && this.selected_index < this.data.length) {
-            this.caption = this.renderer(this.data[this.selected_index])
+            this._caption = this.renderer(this.data[this.selected_index])
         }
     }
     set_renderer(rend:(v:any)=>string) {

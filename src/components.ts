@@ -60,22 +60,25 @@ export class CustomLabel extends Label {
     }
 }
 export class ActionButton extends BaseView {
-    protected caption: string
+    protected _caption: string
     private active: boolean
     constructor(props?:any) {
         super(gen_id("button2"))
         this._name = 'button2'
-        this.caption = 'no caption'
-        if(props && props.caption) this.caption = props.caption
+        this._caption = 'no caption'
+        if(props && props.caption) this._caption = props.caption
         this.active = false
     }
+    caption() {
+        return this._caption
+    }
     set_caption(caption:string) {
-        this.caption = caption
+        this._caption = caption
     }
     draw(g: SurfaceContext): void {
         g.fillBackgroundSize(this.size(),this.active?SelectedColor:ControlBG)
         g.strokeBackgroundSize(this.size(), TextColor)
-        g.fillText(this.caption, new Point(StandardLeftPadding, StandardTextHeight),this.active?SelectedTextColor:TextColor, 'bas')
+        g.fillText(this._caption, new Point(StandardLeftPadding, StandardTextHeight),this.active?SelectedTextColor:TextColor, 'bas')
     }
     input(event:CoolEvent) {
         if(event.category !== POINTER_CATEGORY) return
@@ -89,7 +92,7 @@ export class ActionButton extends BaseView {
         }
     }
     layout(g: SurfaceContext, available: Size): Size {
-        this.set_size(g.measureText(this.caption,'base').grow(StandardLeftPadding))
+        this.set_size(g.measureText(this._caption,'base').grow(StandardLeftPadding))
         return this.size()
     }
 }
