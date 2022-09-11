@@ -15,7 +15,7 @@ import {
     COMMAND_CHANGE,
     CommandEvent, CoolEvent,
     gen_id,
-    Point, POINTER_CATEGORY, POINTER_DRAG, PointerEvent,
+    Point, POINTER_CATEGORY, POINTER_DOWN, POINTER_DRAG, POINTER_UP, PointerEvent,
     Size,
     View,
     with_props
@@ -36,7 +36,7 @@ import {
     ScrollView,
     VBox
 } from "./containers";
-import {PanelBG} from "./style";
+import {calculate_style, PanelBG} from "./style";
 import {NumberTextLine, TextBox, TextLine} from "./text";
 import {make_debugger_connection} from "./remote_debugger";
 
@@ -139,6 +139,7 @@ class DropdownButton extends ActionButton {
 function open_songs_dialog(surf:CanvasSurface) {
     return ()=>{
         let dialog = new DialogContainer()
+        dialog.set_size(new Size(500,350))
         let vbox = new VBox()
         vbox.set_vflex(true)
         vbox.halign = 'stretch'
@@ -174,7 +175,6 @@ function open_songs_dialog(surf:CanvasSurface) {
         body.halign = 'right'
         body.set_vflex(true)
         body.set_fill('white')
-        body.add(new ActionButton("dialog body"))
         let scroll = new ScrollView()
         scroll.set_hflex(true)
         scroll.set_vflex(true)
@@ -492,13 +492,18 @@ function make_login_root(surface: CanvasSurface):View {
 
 class WindowResizeHandle extends BaseView {
     private window: ResizableWindow;
+    private _active: boolean;
     constructor(window:ResizableWindow) {
         super('window-resize-handle');
+        this.set_name('window-resize-handle')
         this.set_size(new Size(20, 20))
         this.window = window
+        this._active = false
     }
     draw(g: SurfaceContext): void {
-        g.fillBackgroundSize(this.size(), '#888')
+        let style = calculate_style(this.name(),false,this._active,true,false)
+        g.fillBackgroundSize(this.size(), style.background_color)
+        g.strokeBackgroundSize(this.size(), style.border_color)
         g.draw_glyph(2921, 2, 0, 'base', 'black')
     }
 
@@ -509,6 +514,12 @@ class WindowResizeHandle extends BaseView {
     override input(event: CoolEvent) {
         if (event.category === POINTER_CATEGORY) {
             let pt = event as PointerEvent
+            if(event.type === POINTER_DOWN) {
+                this._active = true
+            }
+            if(event.type === POINTER_UP) {
+                this._active = false
+            }
             if(event.type === POINTER_DRAG) {
                 this.window.set_size(this.window.size().add(pt.delta))
             }

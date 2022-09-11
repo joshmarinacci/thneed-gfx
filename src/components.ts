@@ -20,7 +20,7 @@ import {
     KeyboardEvent,
     Point,
     POINTER_CATEGORY,
-    POINTER_DOWN,
+    POINTER_DOWN, POINTER_MOVE,
     POINTER_UP,
     PointerEvent,
     Rect,
@@ -76,10 +76,12 @@ export class CustomLabel extends Label {
 export class ActionButton extends BaseView {
     protected _caption: string
     private active: boolean
+    private _hover: boolean;
     constructor(props?:any) {
         super(gen_id("button2"))
         this._name = 'action-button'
         this._caption = 'no caption'
+        this._hover = false
         if(props && props.caption) this._caption = props.caption
         this.active = false
     }
@@ -90,13 +92,14 @@ export class ActionButton extends BaseView {
         this._caption = caption
     }
     draw(g: SurfaceContext): void {
-        let style = calculate_style(this.name(),false,this.active);
+        let style = calculate_style(this.name(),false,this.active,true,this._hover);
         g.fillBackgroundSize(this.size(),style.background_color)
         g.strokeBackgroundSize(this.size(), style.border_color)
         let pt = new Point(style.padding.left, style.padding.top + StandardTextHeight)
         g.fillText(this._caption,
             pt,
             style.text_color, 'base')
+        this._hover = false
     }
     input(event:CoolEvent) {
         if(event.category !== POINTER_CATEGORY) return
@@ -107,6 +110,10 @@ export class ActionButton extends BaseView {
             this.active = false
             let ae = new CommandEvent(event.ctx, COMMAND_ACTION, this)
             this.fire(ae.type, ae)
+        }
+        if(event.type === POINTER_MOVE) {
+            this._hover = true
+            event.ctx.repaint()
         }
     }
     layout(g: SurfaceContext, available: Size): Size {

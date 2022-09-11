@@ -14,6 +14,7 @@ import {SurfaceContext} from "./canvas";
 import {LOGICAL_KEYBOARD_CODE} from "./generated";
 import {HBox} from "./containers";
 import {IconButton} from "./components";
+import {calculate_style, StandardTextHeight} from "./style";
 
 export class TextLine extends BaseView {
     text: string;
@@ -22,31 +23,30 @@ export class TextLine extends BaseView {
 
     constructor() {
         super(gen_id("text-line"));
-        this._name = '@text-line'
+        this._name = 'text-line'
         this.text = "abc"
         this.pref_width = 100
         this.cursor = this.text.length
     }
 
     draw(g: SurfaceContext): void {
-        let bg = '#dddddd'
-        if (g.is_keyboard_focus(this)) bg = 'white'
-        g.fillBackgroundSize(this.size(), bg)
-        g.strokeBackgroundSize(this.size(), 'black')
+        let style = calculate_style(this.name(),false,false,false)
+        // if (g.is_keyboard_focus(this)) bg = 'white'
+        g.fillBackgroundSize(this.size(), style.background_color)
+        g.strokeBackgroundSize(this.size(), style.border_color)
+        let pt = new Point(style.padding.left,style.padding.top + StandardTextHeight)
         if (g.is_keyboard_focus(this)) {
-            // g.ctx.fillStyle = TextColor
-            // g.ctx.font = StandardTextStyle
             let parts = this._parts()
-            let bx = 5
+            let bx = pt.x
             let ax = bx + g.measureText(parts.before, 'base').w
-            g.fillStandardText(parts.before, bx, 20, 'base')
-            g.fillStandardText(parts.after, ax, 20, 'base')
+            g.fillStandardText(parts.before, bx, pt.y, 'base')
+            g.fillStandardText(parts.after, ax, pt.y, 'base')
             // g.ctx.fillStyle = 'black'
-            g.fill(new Rect(ax, 2, 2, 20), '#000000')
+            g.fill(new Rect(ax, 2, 2, pt.y), '#000000')
             // g.ctx.fillRect(ax, 2, 2, 20)
             // console.log("cursor at",ax)
         } else {
-            g.fillStandardText(this.text, 5, 20, 'base');
+            g.fillText(this.text, pt, style.text_color,'base');
         }
     }
 
@@ -76,7 +76,14 @@ export class TextLine extends BaseView {
     }
 
     layout(g: SurfaceContext, available: Size): Size {
-        this.set_size(new Size(this.pref_width, 26))
+        let style = calculate_style(this.name(),false,false,false)
+        let text = this.text
+        if(!text || text.length < 1) {
+            text = "W"
+        }
+        let size = g.measureText(text,'base')
+        size = new Size(this.pref_width, style.padding.top + StandardTextHeight + style.padding.bottom)
+        this.set_size(size)
         if (this._hflex) {
             this.size().w = available.w
         }

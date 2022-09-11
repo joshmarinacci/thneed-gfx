@@ -99,6 +99,7 @@ function extend_with(base: Style, extra:object):Style {
 export const name_styles = new Map<string,Style>()
 export const selected_styles = new Map<string,Style>()
 export const active_styles = new Map<string,Style>()
+export const hover_styles = new Map<string,Style>()
 
 const panel_style:Style = {
     background_color:background_regular,
@@ -122,6 +123,15 @@ name_styles.set('label',{
     text_color:text_regular,
     padding: new Insets(5,5,5,5)
 })
+
+// =========== text ==========
+name_styles.set('text-line',{
+    background_color:background_light,
+    border_color:border_light,
+    text_color:text_regular,
+    padding: new Insets(5,5,5,5)
+})
+
 // ========= buttons =========
 const base_button_style = {
     background_color:background_regular,
@@ -142,6 +152,9 @@ name_styles.set('action-button', base_button_style)
 active_styles.set('action-button',extend_with(base_button_style,{
     background_color:background_selected
 }))
+hover_styles.set('action-button',extend_with(base_button_style,{
+    background_color:'#ff0000'
+}))
 
 
 // ============= containers
@@ -157,12 +170,29 @@ name_styles.set('header', {
     }
 })
 name_styles.set('dialog-container', panel_style)
+name_styles.set('popup-container', panel_style)
 name_styles.set('select-list', panel_style)
-selected_styles.set('select-list', panel_style)
-name_styles.set('scrollbar:thumb', panel_style)
+selected_styles.set('select-list', extend_with(panel_style,{
+    background_color:background_selected,
+}))
+name_styles.set('scrollbar:thumb', extend_with(panel_style,{
+    background_color:background_selected,
+}))
 name_styles.set('scrollbar:arrow',panel_style)
 
-export function calculate_style(name: string, selected: boolean, active?:boolean, enabled?:boolean):Style {
+
+name_styles.set('window-resize-handle', extend_with(panel_style,{
+    background_color:background_light,
+}))
+active_styles.set('window-resize-handle', extend_with(panel_style,{
+    background_color:background_selected,
+}))
+
+export function calculate_style(name: string, selected: boolean, active?:boolean, enabled?:boolean,hover?:boolean):Style {
+    if(hover) {
+        if(hover_styles.has(name)) return hover_styles.get(name)
+        console.warn("no hover style for",name)
+    }
     if(active) {
         if(active_styles.has(name)) return active_styles.get(name)
         console.warn("no active style for",name)

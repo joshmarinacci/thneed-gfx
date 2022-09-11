@@ -321,6 +321,7 @@ class ScrollBar extends BaseView {
         style = calculate_style('scrollbar:thumb',false,this.active,fract<1)
         if(fract<1) {
             g.fill(thumb_rect, style.background_color)
+            g.stroke(thumb_rect, style.border_color)
         }
 
         //draw the arrows
@@ -473,6 +474,7 @@ export class PopupContainer extends BaseParentView {
     draw(g: SurfaceContext): void {
         let style = calculate_style('popup-container',false,false,true)
         g.fillBackgroundSize(this.size(), style.background_color)
+        g.strokeBackgroundSize(this.size(), style.border_color)
     }
 
     layout(g: SurfaceContext, available: Size): Size {
@@ -488,7 +490,6 @@ export class PopupContainer extends BaseParentView {
 
     hide() {
         this._visible = false
-        console.log("hiding", this._visible)
     }
 }
 
