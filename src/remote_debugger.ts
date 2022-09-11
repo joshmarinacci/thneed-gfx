@@ -111,11 +111,6 @@ class RemoteMOPDebuggerConnection extends EventSource<WSEventTypes, any> {
 }
 
 const ROOT_NAME = "ROOT"
-
-function get_view_properties(obj: View) {
-    return ["name","size","position","visible"]
-}
-
 const VIEW_PROPS = ["name","size","position","visible"]
 const PARENT_VIEW_PROPS = ["children",...VIEW_PROPS]
 
@@ -123,25 +118,23 @@ function isParent(obj: object) {
     return obj instanceof BaseParentView
 }
 
-function calculate_view_props(obj: BaseView) {
-    if(obj instanceof BaseParentView) return PARENT_VIEW_PROPS
-    if(obj instanceof BaseView) return VIEW_PROPS
+export type MopObject = string
+export type MopPropName = string
+export type MopType = string
+export type MopPropDef = {
+    name: MopPropName,
+    type: MopType,
+    primitive: boolean,
+    value: any,
 }
 
-function calculate_object_props(obj: object) {
-    return Object.getOwnPropertyNames(obj)
+export interface Mop {
+    getRoot(): MopObject
+    getObjectProperties(obj: MopObject): MopPropDef[]
 }
 
-function calculate_object_proptype(obj: object, prop: string) {
-    if(obj.hasOwnProperty(prop)) {
-        let v = obj[prop]
-        if(typeof v === 'object') return v.constructor.name
-        return typeof (obj[prop])
-    }
-    return "unknown"
-}
 
-class ViewMop {
+class ViewMop implements Mop {
     private surface: CanvasSurface;
     private forward_cache: Map<string, object>;
     private backward_cache: Map<object, string>;
@@ -152,50 +145,30 @@ class ViewMop {
         this.forward_cache.set(ROOT_NAME, this.surface.root())
         this.backward_cache.set(this.surface.root(), ROOT_NAME)
     }
-
+    _lookup_object(obj_id:string):object {
+        return this.forward_cache.get(obj_id)
+    }
     getRoot() {
         return this.backward_cache.get(this.surface.root())
     }
-    lookup_object(obj_id:string):object {
-        return this.forward_cache.get(obj_id)
-    }
-    getObjectProperties(obj_id:string):string[] {
-        let obj = this.lookup_object(obj_id)
+    getObjectProperties(obj_id:string):MopPropDef[] {
+        let obj = this._lookup_object(obj_id)
         // @ts-ignore
-        if(isParent(obj)) return calculate_view_props(obj as View)
-        if(obj instanceof BaseView) return calculate_view_props(obj)
-        return calculate_object_props(obj)
-    }
-    getPropertyType(obj_id:string, prop:string):string {
-        let obj = this.lookup_object(obj_id)
-        if(isParent(obj) && prop === 'children') return "Array"
-        if(prop === "name") return "string"
-        if(prop === "size") return "Size"
-        if(prop === "position") return "Point"
-        if(prop === "visible") return "boolean"
-        if(prop === "caption") return "string"
-        return calculate_object_proptype(obj,prop)
-    }
-    getPropertyValue(object: string, prop: string): any {
-        let obj = this.forward_cache.get(object)
-        console.log(`getting value of ${prop} from object ${object}`,obj)
-        if(prop === "name") return obj[prop]()
-        if(prop === "visible") return obj[prop]()
-        let pv = undefined
-        if(prop === "size") pv = obj[prop]()
-        if(prop === "position") pv = obj[prop]()
-        if(isParent(obj) && prop === "children") {
-            pv = (obj as ParentView).get_children()
-        }
-        if(obj.hasOwnProperty(prop)) {
-            pv = obj[prop]
-        }
-        if (typeof pv === 'object') {
-            console.log("the prop is an object. need to do some sort of reference")
-            return this.get_object_id(pv)
-        } else {
-            return pv
-        }
+        console.log("obj is",isParent(obj))
+        if(isParent(obj)) return PARENT_VIEW_PROPS.map(name => {
+            let parent = obj as BaseParentView
+            if(name === "children") return {
+                name:"children",
+                type:"Array",
+                primitive:false,
+                value:this.get_object_id(parent.get_children())
+            }
+            return this._calculate_prop_def(name,obj[name]())
+        })
+        if(obj instanceof BaseView) return VIEW_PROPS.map(name => {
+            return this._calculate_prop_def(name,obj[name]())
+        })
+        return this._calculate_object_props(obj)
     }
     private get_object_id(pv: object) {
         if (!this.backward_cache.has(pv)) {
@@ -206,6 +179,36 @@ class ViewMop {
         }
         console.log("object is is now", this.backward_cache.get(pv))
         return this.backward_cache.get(pv)
+    }
+    private _calculate_prop_def(name:string, value:any):MopPropDef {
+        let prim = false
+        if(typeof value === 'number') prim = true
+        if(typeof value === 'boolean') prim = true
+        if(typeof value === 'string') prim = true
+        let type = typeof value
+        if(type === 'object') {
+            type = value.constructor.name
+            value = this.get_object_id(value)
+        }
+        return {
+            name: name,
+            type: type,
+            primitive: prim,
+            value: value
+        }
+    }
+    private _calculate_view_props(obj: View):MopPropDef[] {
+        if(obj instanceof BaseView || obj instanceof BaseParentView) {
+            return VIEW_PROPS.map(name => {
+                let value:any = obj[name]()
+                return this._calculate_prop_def(name,value)
+            })
+        }
+
+    }
+
+    private _calculate_object_props(obj: object):MopPropDef[] {
+        return Object.getOwnPropertyNames(obj).map(name => this._calculate_prop_def(name,obj[name]))
     }
 }
 
