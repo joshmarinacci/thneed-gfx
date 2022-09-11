@@ -307,7 +307,7 @@ export class CanvasSurface implements SurfaceContext {
         if(font_name && this.fonts.has(font_name)) {
             let font = this.fonts.get(font_name)
             if(font) {
-                font.draw_glpyh(this.ctx,codepoint,x,y,scale)
+                font.draw_glyph(this.ctx,codepoint,x,y,scale)
             }
         }
     }
@@ -544,7 +544,7 @@ class CanvasFont {
         }
     }
 
-    draw_glpyh(ctx:CanvasRenderingContext2D, cp:number, x:number, y:number, scale?:number) {
+    draw_glyph(ctx:CanvasRenderingContext2D, cp:number, x:number, y:number, scale?:number) {
         let xoff = 0
         let yoff = 2
         if(this.metas.has(cp)) {
