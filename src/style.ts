@@ -69,83 +69,98 @@ export const STD_STYLE = {
         }
     },
 }
+class Insets {
+    left:number
+    right:number
+    top:number
+    bottom:number
+    constructor(top,right,bottom,left) {
+        this.left = left
+        this.top = top
+        this.right = right
+        this.bottom = bottom
+    }
+}
 export type Style = {
     background_color:string,
     border_color:string,
     text_color:string,
+    padding:Insets,
 }
+function extend_with(base: Style, extra:object):Style {
+    let new_object = Object.create(base_button_style)
+    Object.keys(extra).forEach(key => {
+        new_object[key] = extra[key]
+    })
+    return new_object
+}
+
 
 export const name_styles = new Map<string,Style>()
 export const selected_styles = new Map<string,Style>()
 export const active_styles = new Map<string,Style>()
 
-name_styles.set('scrollview', {
-    background_color:background_light,
+const panel_style:Style = {
+    background_color:background_regular,
     border_color: border_regular,
     text_color:text_regular,
-})
-name_styles.set('scrollbar', {
+    padding: {
+        left:0,
+        right:0,
+        top:0,
+        bottom:0,
+    }
+}
+
+name_styles.set('scrollview', panel_style)
+name_styles.set('scrollbar', panel_style)
+
+// ========= labels ==========
+name_styles.set('label',{
     background_color:background_light,
-    border_color: border_light,
+    border_color:'#ff0000',
     text_color:text_regular,
+    padding: new Insets(5,5,5,5)
 })
+// ========= buttons =========
+const base_button_style = {
+    background_color:background_regular,
+    border_color: border_regular,
+    text_color:text_regular,
+    padding: {
+        left:10,
+        right:10,
+        top:10,
+        bottom:15,
+    },
+}
+name_styles.set('base-button', base_button_style)
+selected_styles.set('base-button',extend_with(base_button_style,{
+    background_color:background_selected,
+}))
+name_styles.set('action-button', base_button_style)
+active_styles.set('action-button',extend_with(base_button_style,{
+    background_color:background_selected
+}))
+
+
+// ============= containers
 name_styles.set('header', {
-    background_color:background_light,
-    border_color: border_dark,
-    text_color:text_regular,
+    background_color: background_light,
+    border_color: border_light,
+    text_color: text_regular,
+    padding: {
+        left:0,
+        right:0,
+        top:20,
+        bottom:20,
+    }
 })
-name_styles.set('dialog-container', {
-    background_color:background_regular,
-    border_color: border_regular,
-    text_color:text_regular,
-})
-
-
-name_styles.set('base-button', {
-    background_color:background_regular,
-    border_color: border_regular,
-    text_color:text_regular,
-})
-selected_styles.set('base-button', {
-    background_color:background_selected,
-    border_color: border_selected,
-    text_color:text_selected,
-})
-
-
-name_styles.set('action-button', {
-    background_color:background_regular,
-    border_color: border_regular,
-    text_color:text_regular,
-})
-active_styles.set('action-button',{
-    background_color:background_selected,
-    border_color: border_regular,
-    text_color:text_regular,
-})
-
-name_styles.set('select-list', {
-    background_color:background_regular,
-    border_color: border_regular,
-    text_color:text_regular,
-})
-selected_styles.set('select-list', {
-    background_color:background_selected,
-    border_color: border_regular,
-    text_color:text_regular,
-})
-
-
-name_styles.set('scrollbar:thumb', {
-    background_color:background_selected,
-    border_color: border_regular,
-    text_color:text_regular,
-})
-name_styles.set('scrollbar:arrow', {
-    background_color:background_light,
-    border_color: border_regular,
-    text_color:text_regular,
-})
+name_styles.set('dialog-container', panel_style)
+name_styles.set('select-list', panel_style)
+selected_styles.set('select-list', panel_style)
+name_styles.set('scrollbar:thumb', panel_style)
+name_styles.set('scrollbar:arrow',panel_style)
 
 export function calculate_style(name: string, selected: boolean, active?:boolean, enabled?:boolean):Style {
     if(active) {
@@ -162,6 +177,7 @@ export function calculate_style(name: string, selected: boolean, active?:boolean
     return {
         background_color: STD_STYLE.CONTROL.BACKGROUND.COLOR,
         border_color: STD_STYLE.CONTROL.BORDER.COLOR,
-        text_color: STD_STYLE.CONTROL.TEXT.COLOR
+        text_color: STD_STYLE.CONTROL.TEXT.COLOR,
+        padding: new Insets(0,0,0,0)
     }
 }

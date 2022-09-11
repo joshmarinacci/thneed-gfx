@@ -45,11 +45,19 @@ export class Label extends BaseView {
     }
 
     draw(g: SurfaceContext): void {
-        g.fillStandardText(this._caption, StandardLeftPadding, StandardTextHeight,'base');
+        let style = calculate_style(this.name(),false,false)
+        // g.strokeBackgroundSize(this.size(),style.border_color)
+        g.fillStandardText(this._caption,
+            style.padding.left,
+            style.padding.top + StandardTextHeight,'base');
     }
 
     layout(g: SurfaceContext, available: Size): Size {
-        this.set_size(g.measureText(this._caption,'base').grow(StandardLeftPadding))
+        let style = calculate_style(this.name(),false,false)
+        let size = g.measureText(this._caption,'base')
+        size = new Size(size.w + style.padding.left + style.padding.right,
+            style.padding.top + size.h + style.padding.bottom)
+        this.set_size(size)
         return this.size()
     }
 }
@@ -85,8 +93,10 @@ export class ActionButton extends BaseView {
         let style = calculate_style(this.name(),false,this.active);
         g.fillBackgroundSize(this.size(),style.background_color)
         g.strokeBackgroundSize(this.size(), style.border_color)
-        let text_color = style.text_color
-        g.fillText(this._caption, new Point(STD_STYLE.PADDING.LEFT, StandardTextHeight),text_color, 'base')
+        let pt = new Point(style.padding.left, style.padding.top + StandardTextHeight)
+        g.fillText(this._caption,
+            pt,
+            style.text_color, 'base')
     }
     input(event:CoolEvent) {
         if(event.category !== POINTER_CATEGORY) return
@@ -100,7 +110,11 @@ export class ActionButton extends BaseView {
         }
     }
     layout(g: SurfaceContext, available: Size): Size {
-        this.set_size(g.measureText(this._caption,'base').grow(StandardLeftPadding))
+        let style = calculate_style(this.name(),false,this.active);
+        let size = g.measureText(this._caption,'base')
+        size = new Size(style.padding.left + size.w + style.padding.right,
+            style.padding.top + size.h + style.padding.bottom)
+        this.set_size(size)
         return this.size()
     }
 }
@@ -132,14 +146,14 @@ export abstract class BaseSelectButton extends BaseView {
         this._caption = caption
     }
     draw(g: SurfaceContext) {
-        let x = StandardLeftPadding
-        let y = StandardLeftPadding
+        let style = calculate_style(this.name(),this.selected(),this._active,false)
+        let x = style.padding.left
+        let y = style.padding.top
         if(this.has_icon()) {
             g.draw_glyph(this._selected ? this.selected_icon : this.icon, x, y, 'base', 'black')
             x += 16 // glyph width
             x += StandardLeftPadding // space between text and glyph
         }
-        let style:Style = calculate_style(this.name(),this.selected(),this._active)
         g.fillText(this._caption, new Point(x, y+StandardTextHeight-2), style.text_color, 'base')
     }
     input(event: CoolEvent): void {
@@ -154,11 +168,11 @@ export abstract class BaseSelectButton extends BaseView {
         }
     }
     layout(g: SurfaceContext, available: Size): Size {
-        let size = g.measureText(this._caption,'base').grow(StandardLeftPadding)
-        if(this.has_icon()) {
-            size.w += 16
-        }
-        size.w += StandardLeftPadding // gap between icon and texst
+        let style = calculate_style(this.name(),this.selected(),this._active,false)
+        let size = g.measureText(this._caption,'base')
+        if(this.has_icon()) size.w += 16
+        size = new Size(style.padding.left+size.w+style.padding.right,
+            style.padding.top + size.h + style.padding.bottom)
         this.set_size(size)
         return size
     }
@@ -301,12 +315,10 @@ export class SelectList extends BaseView {
 
 export class Header extends BaseView {
     private _caption: string
-    private fill: string;
 
     constructor(caption?: string) {
         super(gen_id("header"))
         this._name = 'header'
-        this.fill = SelectedColor
         this._caption = caption || "no caption"
         this._hflex = true
     }
@@ -322,10 +334,13 @@ export class Header extends BaseView {
         g.strokeBackgroundSize(this.size(),style.border_color)
         let size = g.measureText(this._caption,'base')
         let x = (this.size().w - size.w) / 2
-        g.fillStandardText(this._caption, x, StandardTextHeight,'base');
+        let y = style.padding.top + StandardTextHeight
+        g.fillStandardText(this._caption, x, y,'base');
     }
     layout(g: SurfaceContext, available: Size): Size {
-        let text_size = g.measureText(this._caption,'base').grow(StandardLeftPadding)
+        let style = calculate_style(this.name(),false,false)
+        let text_size = g.measureText(this._caption,'base')
+        text_size = new Size(available.w, style.padding.top + text_size.h + style.padding.bottom)
         this.set_size(new Size(available.w, text_size.h))
         return this.size()
     }
