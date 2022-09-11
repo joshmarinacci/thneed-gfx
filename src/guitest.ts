@@ -349,7 +349,7 @@ function make_song_list(surface: CanvasSurface) {
     return song_list
 }
 
-function make_standard(w:number,h:number): CanvasSurface{
+function make_standard(w:number,h:number): [CanvasSurface,LayerView]{
     let surface = new CanvasSurface(w,h, 1.0);
     surface.load_jsonfont(basefont_data,'base','base')
     surface.debug = false
@@ -373,7 +373,7 @@ function make_standard(w:number,h:number): CanvasSurface{
     main.add(dl)
     surface.set_root(new KeystrokeCaptureView(main))
 
-    return surface
+    return [surface,app_layer]
 }
 function make_music_player(surface: CanvasSurface):View {
     let root = new VBox()
@@ -599,7 +599,7 @@ function make_text_root(surface: CanvasSurface) {
 }
 
 export function start() {
-    let surface = make_standard(800,400)
+    let [surface,main] = make_standard(800,400)
     let tab_root = new TabbedPanel()
     tab_root.set_name('tabbed-root');
 
@@ -614,7 +614,7 @@ export function start() {
 
     let text_root:View = make_text_root(surface)
     tab_root.add_view('text',text_root);
-    surface.set_root(tab_root)
+    main.add(tab_root)
 
     // (surface.find_by_name('app-layer') as LayerView).add(tab_root)
     surface.start_input()

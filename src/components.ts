@@ -1,5 +1,11 @@
 import {SurfaceContext} from "./canvas";
-import {ControlBG, SelectedColor, SelectedTextColor, StandardLeftPadding, StandardTextHeight, TextColor} from "./style";
+import {
+    calculate_style,
+    SelectedColor,
+    StandardLeftPadding,
+    StandardTextHeight,
+    STD_STYLE, Style
+} from "./style";
 import {
     Action,
     BaseView,
@@ -76,9 +82,11 @@ export class ActionButton extends BaseView {
         this._caption = caption
     }
     draw(g: SurfaceContext): void {
-        g.fillBackgroundSize(this.size(),this.active?SelectedColor:ControlBG)
-        g.strokeBackgroundSize(this.size(), TextColor)
-        g.fillText(this._caption, new Point(StandardLeftPadding, StandardTextHeight),this.active?SelectedTextColor:TextColor, 'bas')
+        let style = calculate_style(this.constructor.name,false,this.active);
+        g.fillBackgroundSize(this.size(),style.background_color)
+        g.strokeBackgroundSize(this.size(), style.border_color)
+        let text_color = style.text_color
+        g.fillText(this._caption, new Point(STD_STYLE.PADDING.LEFT, StandardTextHeight),text_color, 'base')
     }
     input(event:CoolEvent) {
         if(event.category !== POINTER_CATEGORY) return
@@ -96,7 +104,6 @@ export class ActionButton extends BaseView {
         return this.size()
     }
 }
-
 export abstract class BaseSelectButton extends BaseView {
     _caption: string
     _selected:boolean
@@ -131,7 +138,8 @@ export abstract class BaseSelectButton extends BaseView {
             x += 16 // glyph width
             x += StandardLeftPadding // space between text and glyph
         }
-        g.fillText(this._caption, new Point(x, y+StandardTextHeight-2), this._active?SelectedTextColor:TextColor, 'base')
+        let style:Style = calculate_style(this.constructor.name,this.selected(),this._active)
+        g.fillText(this._caption, new Point(x, y+StandardTextHeight-2), style.text_color, 'base')
     }
     input(event: CoolEvent): void {
         if (event.type === POINTER_DOWN) {
@@ -159,25 +167,17 @@ export abstract class BaseSelectButton extends BaseView {
     }
 }
 export class ToggleButton extends BaseSelectButton {
-    // private active: boolean
     constructor(caption?: string) {
         super()
-        if(caption)this.set_caption(caption)
+        if(caption) this.set_caption(caption)
     }
     draw(ctx: SurfaceContext) {
-        let bg = ControlBG
-        if(this.selected()) {
-            bg = SelectedColor
-        }
-        if(this._active) {
-            bg = SelectedColor
-        }
-        ctx.fillBackgroundSize(this.size(), bg)
-        ctx.strokeBackgroundSize(this.size(),TextColor)
+        let style = calculate_style(this.constructor.name,this.selected(),this._active)
+        ctx.fillBackgroundSize(this.size(), style.background_color)
+        ctx.strokeBackgroundSize(this.size(),style.border_color)
         super.draw(ctx)
     }
 }
-
 export class CheckButton extends BaseSelectButton {
     constructor() {
         super();
@@ -202,12 +202,13 @@ export class IconButton extends BaseView {
         this._icon = 0
     }
     draw(g: SurfaceContext): void {
-        g.fillBackgroundSize(this.size(), this.active?SelectedColor:ControlBG)
-        g.strokeBackgroundSize(this.size(), this.active?SelectedTextColor:TextColor)
+        let style = calculate_style(this.constructor.name,false,this.active)
+        g.fillBackgroundSize(this.size(), style.background_color)
+        g.strokeBackgroundSize(this.size(), style.border_color)
         if(this._icon !== 0) {
             let x = StandardLeftPadding
             let y = StandardLeftPadding
-            g.draw_glyph(this._icon,x,y,'base','black')
+            g.draw_glyph(this._icon,x,y,'base',style.text_color)
         }
     }
     input(event:CoolEvent) {
@@ -247,10 +248,12 @@ export class SelectList extends BaseView {
         this._vflex = true
     }
     draw(g: SurfaceContext): void {
-        g.fillBackgroundSize(this.size(),'#dddddd')
+        let style = calculate_style(this.constructor.name,false,false)
+        g.fillBackgroundSize(this.size(),style.background_color)
         this.data.forEach((item,i) => {
             if (i === this.selected_index) {
-                g.fill(new Rect(0,30*i,this.size().w,25), SelectedColor)
+                let style = calculate_style(this.constructor.name,true,false)
+                g.fill(new Rect(0,30*i,this.size().w,25), style.background_color)
             }
             let str = this.renderer(item)
             g.fillStandardText(str,StandardLeftPadding,i*30 + 20, 'base')
@@ -312,7 +315,8 @@ export class Header extends BaseView {
         this._caption = caption
     }
     draw(g: SurfaceContext): void {
-        g.fillBackgroundSize(this.size(),this.fill)
+        let style = calculate_style(this.constructor.name,false,false)
+        g.fillBackgroundSize(this.size(),style.background_color)
         let size = g.measureText(this._caption,'base')
         let x = (this.size().w - size.w) / 2
         g.fillStandardText(this._caption, x, StandardTextHeight,'base');
@@ -347,7 +351,8 @@ export class FontIcon extends BaseView {
     }
 
     draw(g: SurfaceContext): void {
-        g.draw_glyph(this.codepoint, 0, 0, 'base', 'black')
+        let style = calculate_style(this.constructor.name,false,false)
+        g.draw_glyph(this.codepoint, 0, 0, 'base', style.text_color)
     }
 
     layout(g: SurfaceContext, available: Size): Size {

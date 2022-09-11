@@ -8,7 +8,7 @@ import {
     Point,
     POINTER_CATEGORY,
     POINTER_DOWN,
-    POINTER_DRAG,
+    POINTER_DRAG, POINTER_UP,
     PointerEvent,
     Rect,
     SCROLL_EVENT,
@@ -17,7 +17,7 @@ import {
     View
 } from "./core";
 import {SurfaceContext} from "./canvas";
-import {ActionButton} from "./components";
+import {calculate_style} from "./style";
 
 export class LayerView extends BaseParentView {
     _type: string
@@ -277,12 +277,14 @@ class ScrollWrapper extends BaseParentView {
 
 class ScrollBar extends BaseView {
     private vert: boolean;
+    private active: boolean
     private wrapper: ScrollWrapper;
 
     constructor(vert: boolean, wrapper: ScrollWrapper) {
         super(gen_id("scroll-bar"));
         this.wrapper = wrapper
         this.vert = vert
+        this.active = false
         if (this.vert) {
             this.set_size(new Size(20, 100))
         } else {
@@ -292,37 +294,43 @@ class ScrollBar extends BaseView {
 
     draw(g: SurfaceContext): void {
         //draw the gutter
-        g.fillBackgroundSize(this.size(), '#888')
+        let style = calculate_style('scrollbar',false,this.active,true)
+        g.fillBackgroundSize(this.size(), style.background_color)
+
         //draw the thumb
+        let fract = 1
         if (this.wrapper.get_children().length == 1) {
             let viewport_size = this.wrapper.size()
             let content_size = this.wrapper.get_children()[0].size()
-            // this.log("content",content,'vs',wsize)
+            // this.log("content",content_size,'vs',viewport_size)
             if (this.vert) {
                 let gutter_length = this.size().h - 40
-                let fract = viewport_size.h / content_size.h
+                fract = viewport_size.h / content_size.h
+                let style = calculate_style('scrollbar:thumb',false,this.active,fract<1)
                 let s = gutter_length * fract
                 let thumb_off = this.wrapper.yoff * fract
-                g.fill(new Rect(0, 20 - thumb_off, 20, s), '#ccc');
+                g.fill(new Rect(0, 20 - thumb_off, 20, s), style.background_color);
             } else {
                 let gutter_length = this.size().w - 50
-                let fract = viewport_size.w / content_size.w
+                fract = viewport_size.w / content_size.w
+                let style = calculate_style('scrollbar:thumb',false,this.active,fract<1)
                 let s = gutter_length * fract
                 let thumb_off = this.wrapper.xoff * fract
-                g.fill(new Rect(20 - thumb_off, 0, s, 20), '#ccc');
+                g.fill(new Rect(20 - thumb_off, 0, s, 20), style.background_color);
             }
         }
         //draw the arrows
+        let arrow_style = calculate_style('scrollbar:arrow',false,this.active,fract<1)
         if (this.vert) {
-            g.fill(new Rect(0, 0, 20, 20), '#999')
-            g.draw_glyph(8593, 0, 0, 'base', 'black', 1)
-            g.fill(new Rect(0, this.size().h - 20, 20, 20), '#999')
-            g.draw_glyph(8595, 0, this.size().h - 20, 'base', 'black', 1)
+            g.fill(new Rect(0, 0, 20, 20), arrow_style.background_color)
+            g.draw_glyph(8593, 0, 0, 'base', arrow_style.text_color, 1)
+            g.fill(new Rect(0, this.size().h - 20, 20, 20), arrow_style.background_color)
+            g.draw_glyph(8595, 0, this.size().h - 20, 'base', arrow_style.text_color, 1)
         } else {
-            g.fill(new Rect(0, 0, 20, 20), '#999')
-            g.draw_glyph(8592, 0, 0, 'base', 'black', 1)
-            g.fill(new Rect(this.size().w - 20, 0, 20, 20), '#999')
-            g.draw_glyph(8594, this.size().w - 20, 0, 'base', 'black', 1)
+            g.fill(new Rect(0, 0, 20, 20), arrow_style.background_color)
+            g.draw_glyph(8592, 0, 0, 'base', arrow_style.text_color, 1)
+            g.fill(new Rect(this.size().w - 20, 0, 20, 20), arrow_style.background_color)
+            g.draw_glyph(8594, this.size().w - 20, 0, 'base', arrow_style.text_color, 1)
         }
     }
 
@@ -333,18 +341,25 @@ class ScrollBar extends BaseView {
             if (this.vert) {
                 if (event.position.y < 20) {
                     this.wrapper.yoff += 20
+                    this.active = true
                 }
                 if (event.position.y > this.size().h - 20) {
                     this.wrapper.yoff -= 20
+                    this.active = true
                 }
             } else {
                 if (event.position.x < 20) {
                     this.wrapper.xoff += 20
+                    this.active = true
                 }
                 if (event.position.x > this.size().w - 20) {
                     this.wrapper.xoff -= 20
+                    this.active = true
                 }
             }
+        }
+        if (event.type === POINTER_UP) {
+            this.active = false
         }
         if (event.type === POINTER_DRAG) {
             let viewport_size = this.wrapper.size()
@@ -382,8 +397,6 @@ export class ScrollView extends BaseParentView {
     private vbar: ScrollBar
     private content: View
     private wrapper: ScrollWrapper;
-    private up: ActionButton;
-    private down: ActionButton;
     private _pref_width: number
 
     constructor() {
@@ -402,12 +415,12 @@ export class ScrollView extends BaseParentView {
         // @ts-ignore
         this.vbar._name = 'v-scroll-bar'
         this.add(this.vbar)
-
     }
 
 
     draw(g: SurfaceContext): void {
-        g.fillBackgroundSize(this.size(), '#aaa')
+        let style = calculate_style('scrollview',false,false,true)
+        g.fillBackgroundSize(this.size(), style.background_color)
     }
 
     set_pref_width(num: number) {
@@ -450,7 +463,8 @@ export class PopupContainer extends BaseParentView {
     }
 
     draw(g: SurfaceContext): void {
-        g.fillBackgroundSize(this.size(), 'gray')
+        let style = calculate_style('popup-container',false,false,true)
+        g.fillBackgroundSize(this.size(), style.background_color)
     }
 
     layout(g: SurfaceContext, available: Size): Size {
@@ -512,7 +526,8 @@ export class DialogContainer extends BaseParentView {
     }
 
     draw(g: SurfaceContext): void {
-        g.fillBackgroundSize(this.size(), 'gray')
+        let style = calculate_style('dialog-container',false,false,true)
+        g.fillBackgroundSize(this.size(), style.background_color)
     }
 
     layout(g: SurfaceContext, available: Size): Size {
