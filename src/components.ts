@@ -70,7 +70,7 @@ export class ActionButton extends BaseView {
     private active: boolean
     constructor(props?:any) {
         super(gen_id("button2"))
-        this._name = 'button2'
+        this._name = 'action-button'
         this._caption = 'no caption'
         if(props && props.caption) this._caption = props.caption
         this.active = false
@@ -82,7 +82,7 @@ export class ActionButton extends BaseView {
         this._caption = caption
     }
     draw(g: SurfaceContext): void {
-        let style = calculate_style(this.constructor.name,false,this.active);
+        let style = calculate_style(this.name(),false,this.active);
         g.fillBackgroundSize(this.size(),style.background_color)
         g.strokeBackgroundSize(this.size(), style.border_color)
         let text_color = style.text_color
@@ -112,6 +112,7 @@ export abstract class BaseSelectButton extends BaseView {
     icon: number;
     constructor() {
         super(gen_id("base-button"))
+        this._name = 'base-button'
         this._caption = 'no caption'
         this._selected = false;
         this.icon = -1
@@ -138,7 +139,7 @@ export abstract class BaseSelectButton extends BaseView {
             x += 16 // glyph width
             x += StandardLeftPadding // space between text and glyph
         }
-        let style:Style = calculate_style(this.constructor.name,this.selected(),this._active)
+        let style:Style = calculate_style(this.name(),this.selected(),this._active)
         g.fillText(this._caption, new Point(x, y+StandardTextHeight-2), style.text_color, 'base')
     }
     input(event: CoolEvent): void {
@@ -172,7 +173,7 @@ export class ToggleButton extends BaseSelectButton {
         if(caption) this.set_caption(caption)
     }
     draw(ctx: SurfaceContext) {
-        let style = calculate_style(this.constructor.name,this.selected(),this._active)
+        let style = calculate_style(this.name(),this.selected(),this._active, true)
         ctx.fillBackgroundSize(this.size(), style.background_color)
         ctx.strokeBackgroundSize(this.size(),style.border_color)
         super.draw(ctx)
@@ -202,7 +203,7 @@ export class IconButton extends BaseView {
         this._icon = 0
     }
     draw(g: SurfaceContext): void {
-        let style = calculate_style(this.constructor.name,false,this.active)
+        let style = calculate_style(this.name(),false,this.active)
         g.fillBackgroundSize(this.size(), style.background_color)
         g.strokeBackgroundSize(this.size(), style.border_color)
         if(this._icon !== 0) {
@@ -243,16 +244,17 @@ export class SelectList extends BaseView {
     constructor(data:any[], renderer) {
         super('tree')
         this.data = data
+        this._name = 'select-list'
         this.renderer = renderer
         this.selected_index = -1
         this._vflex = true
     }
     draw(g: SurfaceContext): void {
-        let style = calculate_style(this.constructor.name,false,false)
+        let style = calculate_style(this.name(),false,false)
         g.fillBackgroundSize(this.size(),style.background_color)
         this.data.forEach((item,i) => {
             if (i === this.selected_index) {
-                let style = calculate_style(this.constructor.name,true,false)
+                let style = calculate_style(this.name(),true,false)
                 g.fill(new Rect(0,30*i,this.size().w,25), style.background_color)
             }
             let str = this.renderer(item)
@@ -315,8 +317,9 @@ export class Header extends BaseView {
         this._caption = caption
     }
     draw(g: SurfaceContext): void {
-        let style = calculate_style(this.constructor.name,false,false)
+        let style = calculate_style(this.name(),false,false)
         g.fillBackgroundSize(this.size(),style.background_color)
+        g.strokeBackgroundSize(this.size(),style.border_color)
         let size = g.measureText(this._caption,'base')
         let x = (this.size().w - size.w) / 2
         g.fillStandardText(this._caption, x, StandardTextHeight,'base');
@@ -351,7 +354,7 @@ export class FontIcon extends BaseView {
     }
 
     draw(g: SurfaceContext): void {
-        let style = calculate_style(this.constructor.name,false,false)
+        let style = calculate_style(this.name(),false,false)
         g.draw_glyph(this.codepoint, 0, 0, 'base', style.text_color)
     }
 

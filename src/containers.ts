@@ -296,42 +296,50 @@ class ScrollBar extends BaseView {
         //draw the gutter
         let style = calculate_style('scrollbar',false,this.active,true)
         g.fillBackgroundSize(this.size(), style.background_color)
+        g.strokeBackgroundSize(this.size(), style.border_color)
 
         //draw the thumb
         let fract = 1
+        let thumb_rect = new Rect(0,0,1,1)
         if (this.wrapper.get_children().length == 1) {
             let viewport_size = this.wrapper.size()
             let content_size = this.wrapper.get_children()[0].size()
-            // this.log("content",content_size,'vs',viewport_size)
             if (this.vert) {
                 let gutter_length = this.size().h - 40
                 fract = viewport_size.h / content_size.h
-                let style = calculate_style('scrollbar:thumb',false,this.active,fract<1)
                 let s = gutter_length * fract
                 let thumb_off = this.wrapper.yoff * fract
-                g.fill(new Rect(0, 20 - thumb_off, 20, s), style.background_color);
+                thumb_rect = new Rect(0, 20 - thumb_off, 20, s);
             } else {
                 let gutter_length = this.size().w - 50
                 fract = viewport_size.w / content_size.w
-                let style = calculate_style('scrollbar:thumb',false,this.active,fract<1)
                 let s = gutter_length * fract
                 let thumb_off = this.wrapper.xoff * fract
-                g.fill(new Rect(20 - thumb_off, 0, s, 20), style.background_color);
+                thumb_rect = new Rect(20-thumb_off,0,s,20)
             }
         }
+        style = calculate_style('scrollbar:thumb',false,this.active,fract<1)
+        if(fract<1) {
+            g.fill(thumb_rect, style.background_color)
+        }
+
         //draw the arrows
         let arrow_style = calculate_style('scrollbar:arrow',false,this.active,fract<1)
-        if (this.vert) {
-            g.fill(new Rect(0, 0, 20, 20), arrow_style.background_color)
-            g.draw_glyph(8593, 0, 0, 'base', arrow_style.text_color, 1)
-            g.fill(new Rect(0, this.size().h - 20, 20, 20), arrow_style.background_color)
-            g.draw_glyph(8595, 0, this.size().h - 20, 'base', arrow_style.text_color, 1)
-        } else {
-            g.fill(new Rect(0, 0, 20, 20), arrow_style.background_color)
-            g.draw_glyph(8592, 0, 0, 'base', arrow_style.text_color, 1)
-            g.fill(new Rect(this.size().w - 20, 0, 20, 20), arrow_style.background_color)
-            g.draw_glyph(8594, this.size().w - 20, 0, 'base', arrow_style.text_color, 1)
+        let rect1 = new Rect(0,0,20,20)
+        let rect2 = new Rect(this.size().w - 20, 0, 20, 20)
+        let glyphs = [8592,8594]
+        let p2 = new Point(this.size().w-20,0)
+        if(this.vert) {
+            rect2 = new Rect(0, this.size().h - 20, 20, 20)
+            glyphs = [8593,8595]
+            p2 = new Point(0,this.size().h-20)
         }
+        g.fill(rect1, arrow_style.background_color)
+        g.stroke(rect1, arrow_style.border_color)
+        g.fill(rect2, arrow_style.background_color)
+        g.stroke(rect2, arrow_style.border_color)
+        g.draw_glyph(glyphs[0],0,0,'base',arrow_style.text_color,1)
+        g.draw_glyph(glyphs[1],p2.x,p2.y,'base',arrow_style.text_color,1)
     }
 
     input(e: CoolEvent) {
@@ -528,6 +536,7 @@ export class DialogContainer extends BaseParentView {
     draw(g: SurfaceContext): void {
         let style = calculate_style('dialog-container',false,false,true)
         g.fillBackgroundSize(this.size(), style.background_color)
+        g.strokeBackgroundSize(this.size(), style.border_color)
     }
 
     layout(g: SurfaceContext, available: Size): Size {

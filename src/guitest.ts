@@ -384,7 +384,7 @@ function make_music_player(surface: CanvasSurface):View {
     middle_layer.set_vflex(true)
     middle_layer.set_name('middle')
     let source_list = new SelectList(['Library','Playlists','Radio'],(v)=>v)
-    source_list.set_name('source-list')
+    // source_list.set_name('source-list')
 
     let scroll = new ScrollView()
     scroll.set_content(source_list)
