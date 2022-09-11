@@ -38,6 +38,7 @@ import {
 } from "./containers";
 import {PanelBG} from "./style";
 import {NumberTextLine, TextBox, TextLine} from "./text";
+import {make_debugger_connection} from "./remote_debugger";
 
 class FixedGridPanel extends BaseView {
     private sw: number;
@@ -612,8 +613,8 @@ export function start() {
     tab_root.add_view('Window', action_dialog);
 
     let text_root:View = make_text_root(surface)
-    // tab_root.add_view('text',text_root);
-    surface.set_root(text_root)
+    tab_root.add_view('text',text_root);
+    surface.set_root(tab_root)
 
     // (surface.find_by_name('app-layer') as LayerView).add(tab_root)
     surface.start_input()
@@ -621,5 +622,6 @@ export function start() {
     surface.keyboard.debug = false
     // open_songs_dialog(surface)()
     surface.repaint()
+    make_debugger_connection(surface,"ws://localhost:8765")
 }
 
