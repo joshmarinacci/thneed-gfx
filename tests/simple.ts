@@ -1,4 +1,4 @@
-import {ActionButton, CanvasSurface, DebugLayer, LayerView} from "../src";
+import {ActionButton, CanvasSurface, DebugLayer, LayerView} from "../dist/";
 
 export function start() {
     let surface = new CanvasSurface(640, 480);

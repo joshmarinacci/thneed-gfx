@@ -21,7 +21,7 @@ import {
     with_props
 } from "./core";
 // @ts-ignore
-import basefont_data from "./base_font.json";
+import {BASE_FONT} from "./base_font";
 // @ts-ignore
 import toolbar_json from "./toolbar.json"
 import {DebugLayer, ResizeHandle} from "./debug";
@@ -351,7 +351,7 @@ function make_song_list(surface: CanvasSurface) {
 
 function make_standard(w:number,h:number): [CanvasSurface,LayerView]{
     let surface = new CanvasSurface(w,h, 1.0);
-    surface.load_jsonfont(basefont_data,'base','base')
+    surface.load_jsonfont(BASE_FONT,'base','base')
     surface.debug = false
     let main = new LayerView();
     main.set_name('layer-view')

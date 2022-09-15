@@ -1,4 +1,4 @@
-{
+export const BASE_FONT = {
    "version": 3,
    "name": "base_font",
    "color_palette": [
