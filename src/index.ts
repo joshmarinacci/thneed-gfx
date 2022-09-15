@@ -11,4 +11,5 @@ export * from "./generated"
 export * from "./mouse";
 export * from "./keyboard";
 export * from "./text";
+export * from "./base_font"
 console.log("loading thneed")
