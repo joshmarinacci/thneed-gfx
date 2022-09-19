@@ -1,6 +1,6 @@
 import {
     BaseParentView,
-    BaseView,
+    BaseView, COMMAND_CHANGE,
     CoolEvent,
     gen_id,
     KEYBOARD_CATEGORY,
@@ -17,7 +17,8 @@ import {
     View
 } from "./core";
 import {SurfaceContext} from "./canvas";
-import {calculate_style} from "./style";
+import {calculate_style, PanelBG} from "./style";
+import {ToggleButton} from "./components";
 
 export class LayerView extends BaseParentView {
     _type: string
@@ -574,5 +575,66 @@ export class KeystrokeCaptureView extends LayerView {
             }
         }
         super.input(event);
+    }
+}
+
+export class FillChildPanel extends BaseParentView {
+    constructor() {
+        super('fill-child-panel');
+    }
+    layout(g: SurfaceContext, available: Size): Size {
+        this.set_size(available)
+        this._children.forEach(ch => ch.layout(g,available))
+        return this.size()
+    }
+}
+
+export class TabbedPanel extends BaseParentView {
+    private tabs: Map<View, String>;
+    private tab_bar: HBox;
+    private wrapper: FillChildPanel;
+    private selected: View;
+    constructor() {
+        super("tabbed-panel");
+        this.tabs = new Map<View,String>()
+        this.tab_bar = new HBox()
+        this.tab_bar.set_fill(PanelBG)
+        this.tab_bar.set_hflex(true)
+        this.add(this.tab_bar)
+        this.wrapper = new FillChildPanel();
+        this.add(this.wrapper)
+        this.selected = null
+    }
+    draw(g: SurfaceContext) {
+        // this.log('drawing',this.size())
+    }
+
+    layout(g: SurfaceContext, available: Size): Size {
+        this.tab_bar.layout(g, new Size(available.w,available.h));
+        let ts = this.tab_bar.size()
+        this.wrapper.layout(g, new Size(available.w, available.h - ts.h))
+        this.wrapper.set_position(new Point(0,ts.h))
+        this.set_size(available)
+        return this.size()
+    }
+
+    add_view(title: string, content: View) {
+        this.tabs.set(content,title)
+        let tab_button = new ToggleButton()
+        tab_button.set_caption(title)
+        tab_button.set_selected(false)
+        tab_button.on(COMMAND_CHANGE,()=>{
+            // this.log("switching tabs to",title,content)
+            this.selected = content
+            this.tab_bar.get_children().forEach(ch => {
+                (ch as ToggleButton).set_selected(false)
+            })
+            tab_button.set_selected(true)
+            // @ts-ignore
+            this.wrapper._children = []
+            this.wrapper.add(content)
+        })
+        this.tab_bar.add(tab_button)
+        // this.tab_bar.add(with_props(new ToggleButton(),{caption:title, selected:false}))
     }
 }
