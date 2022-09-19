@@ -587,6 +587,13 @@ export class FillChildPanel extends BaseParentView {
         this._children.forEach(ch => ch.layout(g,available))
         return this.size()
     }
+    set_child(view:View) {
+        this._children = []
+        this.add(view)
+    }
+    clear_children() {
+        this._children = []
+    }
 }
 
 export class TabbedPanel extends BaseParentView {
