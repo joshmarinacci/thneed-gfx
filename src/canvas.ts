@@ -292,7 +292,7 @@ export class CanvasSurface implements SurfaceContext {
         if(font_name && this.fonts.has(font_name)) {
             let font = this.fonts.get(font_name)
             if(font) {
-                font.fillText(this.ctx,caption,pt.x,pt.y-StandardTextHeight,scale)
+                font.fillText(this.ctx,caption,pt.x,pt.y-StandardTextHeight,scale,color)
                 return
             }
         }
@@ -479,15 +479,40 @@ export class CanvasSurface implements SurfaceContext {
     }
 }
 
+function forEachPixel(cb: (val: any, i: number, j: number) => void) {
+    for (let j = 0; j < this.h; j++) {
+        for (let i = 0; i < this.w; i++) {
+            let n = j * this.w + i;
+            let v = this.data[n];
+            cb(v, i, j);
+        }
+    }
+}
+
+
+type color = string
+type LocalGlyph = {
+    forEachPixel(cb: (val: any, i: number, j: number) => void)
+    w: number,
+    h: number,
+    meta: {
+        codepoint:number
+        left:number,
+        right:number,
+        baseline:number,
+    }
+}
 class CanvasFont {
     private data: any;
-    private metas:Map<number,SpriteGlyph>
+    private metas:Map<number,LocalGlyph>
     private scale = 2;
+    private image_cache:Map<number,Map<color,HTMLCanvasElement>>;
     constructor(data) {
         this.data = data
         this.metas = new Map()
-        this.data.glyphs.forEach(gl => {
-            this.generate_image(gl)
+        this.image_cache = new Map()
+        this.data.glyphs.forEach((gl:LocalGlyph) => {
+            gl.forEachPixel = forEachPixel
             this.metas.set(gl.meta.codepoint,gl)
         })
     }
@@ -509,82 +534,64 @@ class CanvasFont {
         return new Size(xoff*this.scale,h*this.scale)
     }
 
-    fillText(ctx:CanvasRenderingContext2D, text:string,x:number,y:number, scale?:number) {
+    fillText(ctx:CanvasRenderingContext2D, text:string,x:number,y:number, scale?:number, color?:string) {
         if(!scale) scale = 1
+        if(!color) color = 'black'
         ctx.fillStyle = 'red'
-        let size = this.measureText(text)
         let xoff = 0
         let yoff = 2
-        // ctx.fillRect(x+xoff, y+yoff, size.w, size.h)
         for (let i = 0; i < text.length; i++) {
             let cp = text.codePointAt(i)
             let dx = x + xoff*this.scale*scale
-            if (this.metas.has(cp)) {
-                let glyph = this.metas.get(cp)
-                ctx.imageSmoothingEnabled = false
-                //@ts-ignore
-                let img = glyph.img
-                let sx = glyph.meta.left
-                let sy = 0
-                let sw = glyph.w - glyph.meta.left - glyph.meta.right
-                let sh = glyph.h //- glyph.meta.baseline
-                let dy = y + (yoff+glyph.meta.baseline-1)*this.scale*scale
-                let dw = sw*this.scale*scale
-                let dh = sh*this.scale*scale
-                ctx.drawImage(img, sx,sy,sw,sh, dx,dy, dw,dh)
-                xoff += sw + 1
-            } else {
-                //missing the glyph
-                let ew = 8
-                let dy = y + (yoff)*this.scale*scale
-                ctx.strokeRect(dx,dy,ew*this.scale*scale,ew*this.scale*scale)
-                xoff += ew + 1
-
-            }
+            let dy = y + (yoff)*this.scale*scale
+            let gw = this.draw_glyph(ctx,cp,dx,dy, scale, color)
+            xoff += gw + 1
         }
     }
 
-    draw_glyph(ctx:CanvasRenderingContext2D, cp:number, x:number, y:number, scale?:number) {
-        let xoff = 0
-        let yoff = 2
+    draw_glyph(ctx:CanvasRenderingContext2D, cp:number, x:number, y:number, scale?:number, color?:string):number {
+        if(!color) color = 'black'
         if(this.metas.has(cp)) {
             let glyph = this.metas.get(cp)
             ctx.imageSmoothingEnabled = false
-            //@ts-ignore
-            let img = glyph.img
+            let img = this.get_glyph_buffer(glyph,color)
             let sx = glyph.meta.left
             let sy = 0
             let sw = glyph.w - glyph.meta.left - glyph.meta.right
             let sh = glyph.h //- glyph.meta.baseline
-            let dx = x + xoff*this.scale*scale
-            let dy = y + (yoff+glyph.meta.baseline-1)*this.scale*scale
+            let dx = x + this.scale*scale
+            let dy = y + (glyph.meta.baseline-1)*this.scale*scale
             let dw = sw*this.scale*scale
             let dh = sh*this.scale*scale
             ctx.drawImage(img, sx,sy,sw,sh, dx,dy, dw,dh)
+            return sw
+        } else {
+            let ew = 8
+            ctx.strokeRect(x,y,ew*this.scale*scale,ew*this.scale*scale)
+            return ew
         }
     }
 
-    private generate_image(gl) {
-        gl.img = document.createElement('canvas')
-        gl.img.width = gl.w
-        gl.img.height = gl.h
-        let c = gl.img.getContext('2d')
-        c.fillStyle = 'green'
-        c.fillRect(0,0,gl.img.width,gl.img.height)
-        for (let j = 0; j < gl.h; j++) {
-            for (let i = 0; i < gl.w; i++) {
-                let n = j * gl.w + i;
-                let v = gl.data[n];
-                if(v %2 === 0) {
-                    c.fillStyle = 'white'
-                    // c.fillRect(i, j, 1, 1)
-                    c.clearRect(i,j,1,1)
-                }
-                if(v%2 === 1) {
-                    c.fillStyle = 'black'
-                    c.fillRect(i, j, 1, 1)
-                }
-            }
+    private get_glyph_buffer(gl: LocalGlyph, color: color) {
+        if(!this.image_cache.has(gl.meta.codepoint)) {
+            this.image_cache.set(gl.meta.codepoint, new Map())
         }
+        let mp = this.image_cache.get(gl.meta.codepoint);
+        if(!mp.has(color)) {
+            let img = document.createElement('canvas')
+            img.width = gl.w
+            img.height = gl.h
+            let ctx = img.getContext('2d')
+            ctx.fillStyle = 'transparent'
+            ctx.fillRect(0,0,img.width,img.height)
+            gl.forEachPixel((v,i,j)=> {
+                if(v%2 === 1) {
+                    ctx.fillStyle = color
+                    ctx.fillRect(i, j, 1,1)
+                }
+            })
+            mp.set(color,img)
+        }
+        return mp.get(color)
     }
 }
