@@ -19,7 +19,7 @@ const border_regular = '#8c8a8a'
 const border_light = '#c5c4c4'
 const text_regular = '#4d4d4d'
 
-const background_selected = '#57f1bf'
+const background_selected = '#4acb9e'
 const border_selected = '#595858'
 const text_selected = '#4d4d4d'
 
@@ -147,10 +147,16 @@ const base_button_style = {
 name_styles.set('base-button', base_button_style)
 selected_styles.set('base-button',extend_with(base_button_style,{
     background_color:background_selected,
+    text_color:'white',
+}))
+active_styles.set('base-button',extend_with(base_button_style,{
+    background_color:background_selected,
+    text_color:'white',
 }))
 name_styles.set('action-button', base_button_style)
 active_styles.set('action-button',extend_with(base_button_style,{
-    background_color:background_selected
+    background_color:background_selected,
+    text_color:'white',
 }))
 hover_styles.set('action-button',extend_with(base_button_style,{
     background_color:'#ff0000'
@@ -174,6 +180,7 @@ name_styles.set('popup-container', panel_style)
 name_styles.set('select-list', panel_style)
 selected_styles.set('select-list', extend_with(panel_style,{
     background_color:background_selected,
+    text_color:'white',
 }))
 name_styles.set('scrollbar:thumb', extend_with(panel_style,{
     background_color:background_selected,
@@ -194,6 +201,7 @@ export function calculate_style(name: string, selected: boolean, active?:boolean
         console.warn("no hover style for",name)
     }
     if(active) {
+        console.log("doing active for",name)
         if(active_styles.has(name)) return active_styles.get(name)
         console.warn("no active style for",name)
     }

@@ -274,12 +274,15 @@ export class SelectList extends BaseView {
         let style = calculate_style(this.name(),false,false)
         g.fillBackgroundSize(this.size(),style.background_color)
         this.data.forEach((item,i) => {
-            if (i === this.selected_index) {
-                let style = calculate_style(this.name(),true,false)
-                g.fill(new Rect(0,30*i,this.size().w,25), style.background_color)
-            }
             let str = this.renderer(item)
-            g.fillStandardText(str,StandardLeftPadding,i*30 + 20, 'base')
+            let pos = new Point(StandardLeftPadding,i*30+20)
+            if (i === this.selected_index) {
+                let sel_style = calculate_style(this.name(),true,false)
+                g.fill(new Rect(0,30*i,this.size().w,25), sel_style.background_color)
+                g.fillText(str, pos ,sel_style.text_color,'base')
+            } else {
+                g.fillText(str, pos ,style.text_color,'base')
+            }
         })
     }
     input(event:CoolEvent) {
