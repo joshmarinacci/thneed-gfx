@@ -16,6 +16,16 @@ import {HBox} from "./containers";
 import {IconButton} from "./components";
 import {calculate_style, StandardTextHeight} from "./style";
 
+const LETTERS = {
+    'KEY_A':'a',
+    'KEY_B':'b',
+    'KEY_C':'c',
+    'KEY_D':'d',
+    'KEY_E':'e',
+    'KEY_F':'f',
+    'KEY_G':'g',
+    'KEY_H':'h',
+}
 export class TextLine extends BaseView {
     text: string;
     private cursor: number;
@@ -71,7 +81,14 @@ export class TextLine extends BaseView {
                 this.fire('action', this.text)
                 return
             }
-            if (e.key && e.key.length === 1) this.insert(e.key)
+            this.log("using as a letter",e.code, e.modifiers)
+            if(LETTERS.hasOwnProperty(e.code)) {
+                let letter = LETTERS[e.code]
+                if(e.modifiers.shift) {
+                    letter = letter.toUpperCase()
+                }
+                this.insert(letter);
+            }
         }
     }
 
