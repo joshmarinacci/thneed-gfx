@@ -273,6 +273,10 @@ class ScrollWrapper extends BaseParentView {
             e.ctx.repaint()
         }
     }
+    override add(view: View) {
+        this._children = []
+        super.add(view)
+    }
 
 }
 
